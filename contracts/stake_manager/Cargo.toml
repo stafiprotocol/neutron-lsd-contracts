@@ -1,0 +1,43 @@
+[package]
+name = "stake-manager"
+version = "0.1.0"
+edition = "2021"
+
+
+exclude = [
+    # Those files are rust-optimizer artifacts. You might want to commit them for convenience but they should not be part of the source code publication.
+    "contract.wasm",
+    "hash.txt",
+]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# for quicker tests, cargo test --lib
+# for more explicit tests, cargo test --features=backtraces
+library = []
+backtraces = ["cosmwasm-std/backtraces"]
+cosmwasm_1_1 = ["cosmwasm-std/cosmwasm_1_1"]
+cosmwasm_1_2 = ["cosmwasm_1_1", "cosmwasm-std/cosmwasm_1_2"]
+cosmwasm_1_3 = ["cosmwasm_1_2", "cosmwasm-std/cosmwasm_1_3"]
+cosmwasm_1_4 = ["cosmwasm_1_3", "cosmwasm-std/cosmwasm_1_4"]
+
+[dependencies]
+cosmwasm-std = { workspace = true, features = ["staking", "stargate", "cosmwasm_1_2"] }
+cw2 = { workspace = true }
+cw20 = { workspace = true }
+schemars = { workspace = true }
+serde = { workspace = true }
+serde-json-wasm = { workspace = true }
+cw-storage-plus = { workspace = true, features = ["iterator"] }
+# neutron-sdk = { git = "https://github.com:stafihub/neutron-sdk", branch = "hotfix/kv-delegations", default-features = false }
+neutron-sdk = { path = "../../packages/neutron-sdk", default-features = false }
+cosmos-sdk-proto = { workspace = true }
+lsd_token = { path = "../lsd_token", features = ["library"] }
+thiserror = "1.0.50"
+prost = "0.12.2"
+cw-utils = "1.0.3"
+cosmwasm-schema = { workspace = true }
+
+[dev-dependencies]
