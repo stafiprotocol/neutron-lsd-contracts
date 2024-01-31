@@ -14,11 +14,11 @@ use crate::state::{
 };
 use crate::{error_conversion::ContractError, execute_era_restake::sudo_era_rebond_callback};
 use crate::{
-    execute_era_stake::sudo_era_bond_callback,
-    execute_era_stake::sudo_era_bond_failed_callback,
     execute_era_collect_withdraw::{
         sudo_era_collect_withdraw_callback, sudo_era_collect_withdraw_failed_callback,
     },
+    execute_era_stake::sudo_era_bond_callback,
+    execute_era_stake::sudo_era_bond_failed_callback,
     execute_era_update::sudo_era_update_callback,
     execute_era_update::sudo_era_update_failed_callback,
 };

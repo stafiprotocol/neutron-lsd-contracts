@@ -257,9 +257,9 @@ EOF
     fi
     echo "$tx_hash"
 
-    echo "Waiting 10 seconds for lsd_token mint (sometimes it takes a lot of time)…"
+    echo "Waiting 15 seconds for lsd_token mint (sometimes it takes a lot of time)…"
     # shellcheck disable=SC2034
-    for i in $(seq 10); do
+    for i in $(seq 15); do
         sleep 1
         echo -n .
     done

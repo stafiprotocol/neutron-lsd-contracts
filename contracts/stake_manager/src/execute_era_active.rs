@@ -2,7 +2,7 @@ use core::ops::{Mul, Sub};
 use std::ops::{Add, Div};
 
 use cosmwasm_std::{to_json_binary, DepsMut, Response, Uint128, WasmMsg};
-
+pub use cw20::Cw20ExecuteMsg;
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
     NeutronResult,
@@ -119,7 +119,7 @@ pub fn execute_era_active(
         let msg = WasmMsg::Execute {
             contract_addr: pool_info.lsd_token.to_string(),
             msg: to_json_binary(
-                &(lsd_token::msg::ExecuteMsg::Mint {
+                &(Cw20ExecuteMsg::Mint {
                     recipient: pool_info.platform_fee_receiver.to_string(),
                     amount: platform_fee,
                 }),
@@ -134,7 +134,7 @@ pub fn execute_era_active(
         let msg = WasmMsg::Execute {
             contract_addr: pool_info.lsd_token.to_string(),
             msg: to_json_binary(
-                &(lsd_token::msg::ExecuteMsg::Mint {
+                &(Cw20ExecuteMsg::Mint {
                     recipient: stack_info.stack_fee_receiver.to_string(),
                     amount: stack_fee,
                 }),

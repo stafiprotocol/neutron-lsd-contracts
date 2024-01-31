@@ -6,18 +6,10 @@ config_pool() {
   msg=$(printf '{
   "config_pool": {
     "pool_addr": "%s",
-    "platform_fee_receiver": "%s",
-    "minimal_stake": "1000",
-    "unstake_times_limit": 10,
-    "unbonding_period": 1,
-    "platform_fee_commission": "100000",
     "lsm_support": true,
-    "paused": false,
-    "rate_change_limit": "0",
-    "lsm_pending_limit": 60,
-    "offset": 26
+    "offset": 6
   }
-}' "$pool_address" "$ADDRESS_1")
+}' "$pool_address")
   # echo "config pool msg is: $msg"
   tx_result="$(neutrond tx wasm execute "$contract_address" "$msg" \
     --from "$ADDRESS_1" -y --chain-id "$CHAIN_ID_1" --output json \

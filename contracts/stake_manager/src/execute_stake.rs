@@ -9,7 +9,7 @@ use neutron_sdk::{
 
 use crate::state::POOLS;
 use crate::{error_conversion::ContractError, helper::CAL_BASE};
-
+pub use cw20::Cw20ExecuteMsg;
 pub fn execute_stake(
     deps: DepsMut<NeutronQuery>,
     _: Env,
@@ -39,7 +39,7 @@ pub fn execute_stake(
     let msg = WasmMsg::Execute {
         contract_addr: pool_info.lsd_token.to_string(),
         msg: to_json_binary(
-            &(lsd_token::msg::ExecuteMsg::Mint {
+            &(Cw20ExecuteMsg::Mint {
                 recipient: neutron_address.to_string(),
                 amount: lsd_token_amount,
             }),

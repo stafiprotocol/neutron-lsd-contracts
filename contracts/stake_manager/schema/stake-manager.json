@@ -358,10 +358,10 @@
       {
         "type": "object",
         "required": [
-          "era_bond"
+          "era_stake"
         ],
         "properties": {
-          "era_bond": {
+          "era_stake": {
             "type": "object",
             "required": [
               "pool_addr"
@@ -400,10 +400,10 @@
       {
         "type": "object",
         "required": [
-          "era_rebond"
+          "era_restake"
         ],
         "properties": {
-          "era_rebond": {
+          "era_restake": {
             "type": "object",
             "required": [
               "pool_addr"
@@ -1923,12 +1923,12 @@
             "init_failed",
             "era_update_started",
             "era_update_ended",
-            "bond_started",
-            "bond_ended",
+            "era_stake_started",
+            "era_stake_ended",
             "withdraw_started",
             "withdraw_ended",
-            "rebond_started",
-            "rebond_ended",
+            "era_restake_started",
+            "era_restake_ended",
             "active_ended"
           ]
         },

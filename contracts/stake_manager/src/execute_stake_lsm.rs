@@ -9,6 +9,7 @@ use crate::{
 use cosmwasm_std::{
     coins, to_json_binary, BankMsg, Coin, DepsMut, Env, MessageInfo, Response, Uint128, WasmMsg,
 };
+pub use cw20::Cw20ExecuteMsg;
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
     query::min_ibc_fee::query_min_ibc_fee,
@@ -179,7 +180,7 @@ pub fn sudo_stake_lsm_callback(
     let msg = WasmMsg::Execute {
         contract_addr: pool_info.lsd_token.to_string(),
         msg: to_json_binary(
-            &(lsd_token::msg::ExecuteMsg::Mint {
+            &(Cw20ExecuteMsg::Mint {
                 recipient: staker_neutron_addr.to_string(),
                 amount: lsd_token_amount,
             }),

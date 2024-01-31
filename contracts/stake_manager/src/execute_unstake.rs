@@ -1,16 +1,16 @@
 use std::ops::{Add, Div, Mul, Sub};
 use std::vec;
 
-use cosmwasm_std::{to_json_binary, CosmosMsg, DepsMut, MessageInfo, Response, Uint128, WasmMsg};
-use neutron_sdk::{
-    bindings::{msg::NeutronMsg, query::NeutronQuery},
-    NeutronResult,
-};
-
 use crate::state::{
     UnstakeInfo, WithdrawStatus, POOLS, UNSTAKES_INDEX_FOR_USER, UNSTAKES_OF_INDEX,
 };
 use crate::{error_conversion::ContractError, helper::CAL_BASE};
+use cosmwasm_std::{to_json_binary, CosmosMsg, DepsMut, MessageInfo, Response, Uint128, WasmMsg};
+pub use cw20::Cw20ExecuteMsg;
+use neutron_sdk::{
+    bindings::{msg::NeutronMsg, query::NeutronQuery},
+    NeutronResult,
+};
 
 // Before this step, need the user to authorize burn from
 pub fn execute_unstake(
@@ -49,7 +49,7 @@ pub fn execute_unstake(
             let mint_msg = WasmMsg::Execute {
                 contract_addr: pool_info.lsd_token.to_string(),
                 msg: to_json_binary(
-                    &(lsd_token::msg::ExecuteMsg::TransferFrom {
+                    &(Cw20ExecuteMsg::TransferFrom {
                         owner: info.sender.to_string(),
                         recipient: pool_info.platform_fee_receiver.to_string(),
                         amount: cms_fee,
@@ -77,7 +77,7 @@ pub fn execute_unstake(
     let burn_msg = WasmMsg::Execute {
         contract_addr: pool_info.lsd_token.to_string(),
         msg: to_json_binary(
-            &(lsd_token::msg::ExecuteMsg::BurnFrom {
+            &(Cw20ExecuteMsg::BurnFrom {
                 owner: info.sender.to_string(),
                 amount: will_burn_lsd_token_amount,
             }),

@@ -24,7 +24,11 @@ cosmwasm_1_3 = ["cosmwasm_1_2", "cosmwasm-std/cosmwasm_1_3"]
 cosmwasm_1_4 = ["cosmwasm_1_3", "cosmwasm-std/cosmwasm_1_4"]
 
 [dependencies]
-cosmwasm-std = { workspace = true, features = ["staking", "stargate", "cosmwasm_1_2"] }
+cosmwasm-std = { workspace = true, features = [
+    "staking",
+    "stargate",
+    "cosmwasm_1_2",
+] }
 cw2 = { workspace = true }
 cw20 = { workspace = true }
 schemars = { workspace = true }

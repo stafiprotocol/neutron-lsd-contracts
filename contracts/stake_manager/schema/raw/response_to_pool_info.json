@@ -222,12 +222,12 @@
         "init_failed",
         "era_update_started",
         "era_update_ended",
-        "bond_started",
-        "bond_ended",
+        "era_stake_started",
+        "era_stake_ended",
         "withdraw_started",
         "withdraw_ended",
-        "rebond_started",
-        "rebond_ended",
+        "era_restake_started",
+        "era_restake_ended",
         "active_ended"
       ]
     },
