@@ -13,6 +13,7 @@ use crate::state::{EraSnapshot, IcaInfo, PoolInfo, QueryKind, Stack, UnstakeInfo
 #[cw_serde]
 pub struct InstantiateMsg {
     pub lsd_token_code_id: u64,
+    pub stack_fee_receiver: Addr,
 }
 
 #[cw_serde]
@@ -83,6 +84,7 @@ pub struct ConfigStackParams {
     pub total_stack_fee: Option<Uint128>,
     pub lsd_token_code_id: Option<u64>,
     pub add_entrusted_pool: Option<String>,
+    pub remove_entrusted_pool: Option<String>,
 }
 
 #[cw_serde]
@@ -108,7 +110,6 @@ pub enum ExecuteMsg {
     RegisterPool {
         connection_id: String,
         interchain_account_id: String,
-        register_fee: Vec<Coin>,
     },
     InitPool(Box<InitPoolParams>),
     ConfigPool(Box<ConfigPoolParams>),
@@ -116,7 +117,6 @@ pub enum ExecuteMsg {
     OpenChannel {
         pool_addr: String,
         closed_channel_id: String,
-        register_fee: Vec<Coin>,
     },
     RedeemTokenForShare {
         pool_addr: String,

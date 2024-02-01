@@ -37,6 +37,13 @@ pub fn execute_config_stack(
             stack.pools.push(add_entrusted_pool);
         }
     }
+    if let Some(remove_entrusted_pool) = param.remove_entrusted_pool {
+        if stack.pools.contains(&remove_entrusted_pool) {
+            stack
+                .pools
+                .retain(|p| p.to_string() != remove_entrusted_pool);
+        }
+    }
 
     STACK.save(deps.storage, &stack)?;
 

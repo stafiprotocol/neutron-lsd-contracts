@@ -32,6 +32,7 @@ pub const CAL_BASE: Uint128 = Uint128::new(1_000_000);
 pub const DEFAULT_DECIMALS: u8 = 6;
 pub const DEFAULT_ERA_SECONDS: u64 = 86400; //24h
 pub const MIN_ERA_SECONDS: u64 = 28800; //8h
+pub const VALIDATORS_LEN_LIMIT: usize = 16;
 
 // Default timeout for SubmitTX is 30h
 pub const DEFAULT_TIMEOUT_SECONDS: u64 = 30 * 60 * 60;

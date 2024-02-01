@@ -5,20 +5,14 @@ register_pool() {
   # pion-1 100000
   msg='{"register_pool":{
     "connection_id": "connection-0",
-    "interchain_account_id": "test1",
-    "register_fee":[
-      {
-          "denom":"untrn",
-          "amount": "1000000"
-      }
-    ]
+    "interchain_account_id": "test1"
   }}'
 
   tx_result="$(neutrond tx wasm execute "$contract_address" "$msg" \
+    --amount 2000000untrn \
     --from "$ADDRESS_1" -y --chain-id "$CHAIN_ID_1" --output json \
     --broadcast-mode=sync --gas-prices 0.0055untrn --gas 2000000 \
     --keyring-backend=test --home "$HOME_1" --node "$NEUTRON_NODE" | wait_tx)"
-  # --amount 2000000untrn \
 
   code="$(echo "$tx_result" | jq '.code')"
   if [[ "$code" -ne 0 ]]; then
@@ -42,6 +36,18 @@ register_pool() {
 
   echo "ICA(Pool) address: $pool_address"
   echo "withdraw_addr: $withdraw_addr"
+
+  echo "--------------Sent money to contract to pay fees---------------------------"
+
+  tx_result="$(neutrond tx bank send demowallet1 "$contract_address" 10000000untrn \
+    --chain-id "$CHAIN_ID_1" --home "$HOME_1" --node "$NEUTRON_NODE" \
+    --keyring-backend=test -y --gas-prices 0.0025untrn \
+    --broadcast-mode=sync --output json | wait_tx)"
+
+  code="$(echo "$tx_result" | jq '.code')"
+  if [[ "$code" -ne 0 ]]; then
+    echo "Failed to send money to contract: $(echo "$tx_result" | jq '.raw_log')" && exit 1
+  fi
 
   echo "-------------------------- transfer uatom through ibc -------------------------------------"
 

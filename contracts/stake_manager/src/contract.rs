@@ -66,7 +66,7 @@ pub fn instantiate(
         deps.storage,
         &(Stack {
             admin: info.sender.clone(),
-            stack_fee_receiver: info.sender.clone(),
+            stack_fee_receiver: msg.stack_fee_receiver,
             stack_fee_commission: Uint128::new(100_000),
             total_stack_fee: Uint128::zero(),
             pools: vec![],
@@ -136,23 +136,14 @@ pub fn execute(
         ExecuteMsg::RegisterPool {
             connection_id,
             interchain_account_id,
-            register_fee,
-        } => execute_register_pool(
-            deps,
-            env,
-            info,
-            connection_id,
-            interchain_account_id,
-            register_fee,
-        ),
+        } => execute_register_pool(deps, env, info, connection_id, interchain_account_id),
         ExecuteMsg::InitPool(params) => execute_init_pool(deps, env, info, *params),
         ExecuteMsg::ConfigPool(params) => execute_config_pool(deps, info, *params),
         ExecuteMsg::ConfigStack(params) => execute_config_stack(deps, info, *params),
         ExecuteMsg::OpenChannel {
             pool_addr,
             closed_channel_id,
-            register_fee,
-        } => execute_open_channel(deps, env, info, pool_addr, closed_channel_id, register_fee),
+        } => execute_open_channel(deps, env, info, pool_addr, closed_channel_id),
         ExecuteMsg::RedeemTokenForShare { pool_addr, tokens } => {
             execute_redeem_token_for_share(deps, info, pool_addr, tokens)
         }

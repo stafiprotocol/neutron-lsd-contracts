@@ -1,5 +1,5 @@
 use crate::helper::{
-    deal_pool, set_withdraw_sub_msg, CAL_BASE, DEFAULT_ERA_SECONDS, MIN_ERA_SECONDS,
+    self, deal_pool, set_withdraw_sub_msg, CAL_BASE, DEFAULT_ERA_SECONDS, MIN_ERA_SECONDS,
 };
 use crate::msg::InitPoolParams;
 use crate::state::ValidatorUpdateStatus;
@@ -25,7 +25,9 @@ pub fn execute_init_pool(
     let (pool_ica_info, withdraw_ica_info, _) =
         INFO_OF_ICA_ID.load(deps.storage, param.interchain_account_id.clone())?;
 
-    if param.validator_addrs.is_empty() || param.validator_addrs.len() > 5 {
+    if param.validator_addrs.is_empty()
+        || param.validator_addrs.len() > helper::VALIDATORS_LEN_LIMIT
+    {
         return Err(ContractError::ValidatorAddressesListSize {}.into());
     }
 

@@ -5,9 +5,9 @@ use neutron_sdk::{
     NeutronResult,
 };
 
-use crate::error_conversion::ContractError;
 use crate::helper::deal_validators_icq_update;
 use crate::state::{EraStatus, INFO_OF_ICA_ID, POOLS};
+use crate::{error_conversion::ContractError, helper};
 
 pub fn execute_add_pool_validators(
     deps: DepsMut<NeutronQuery>,
@@ -25,7 +25,7 @@ pub fn execute_add_pool_validators(
         return Err(ContractError::EraProcessNotEnd {}.into());
     }
 
-    if pool_info.validator_addrs.len() >= 5 {
+    if pool_info.validator_addrs.len() >= helper::VALIDATORS_LEN_LIMIT {
         return Err(ContractError::ValidatorAddressesListSize {}.into());
     }
     if pool_info.validator_addrs.contains(&validator_addr) {

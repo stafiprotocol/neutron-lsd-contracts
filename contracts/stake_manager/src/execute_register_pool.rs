@@ -1,4 +1,6 @@
-use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response, Uint128};
+use std::ops::Div;
+
+use cosmwasm_std::{Addr, Coin, DepsMut, Env, MessageInfo, Response, Uint128};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -34,7 +36,6 @@ pub fn execute_register_pool(
     info: MessageInfo,
     connection_id: String,
     interchain_account_id: String,
-    register_fee: Vec<cosmwasm_std::Coin>,
 ) -> NeutronResult<Response<NeutronMsg>> {
     if interchain_account_id.trim().is_empty()
         || interchain_account_id.contains(".")
@@ -49,17 +50,28 @@ pub fn execute_register_pool(
         return Err(ContractError::InterchainAccountIdAlreadyExist {}.into());
     }
 
+    let register_fee = if !info.funds.is_empty() {
+        let register_fee_raw: Vec<Coin> = info
+            .funds
+            .iter()
+            .map(|c| Coin::new(c.amount.u128().div(2), c.denom.clone()))
+            .collect();
+        Some(register_fee_raw)
+    } else {
+        None
+    };
+
     let register_pool_msg = NeutronMsg::register_interchain_account(
         connection_id.clone(),
         interchain_account_id.clone(),
-        Some(register_fee.clone()),
+        register_fee.clone(),
     );
 
     let withdraw_ica_id = get_withdraw_ica_id(interchain_account_id.clone());
     let register_withdraw_msg = NeutronMsg::register_interchain_account(
         connection_id.clone(),
         withdraw_ica_id.clone(),
-        Some(register_fee),
+        register_fee,
     );
 
     let ctrl_port_id_of_pool = get_port_id(
