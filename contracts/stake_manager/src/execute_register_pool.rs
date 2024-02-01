@@ -120,7 +120,7 @@ pub fn sudo_open_ack(
     // including the generated account address.
     let parsed_version: OpenAckVersion =
         serde_json_wasm::from_str(counterparty_version.as_str())
-        .map_err( |_| ContractError::CantParseCounterpartyVersion {})?;
+            .map_err(|_| ContractError::CantParseCounterpartyVersion {})?;
 
     let port_id_parts: Vec<String> = port_id.split('.').map(String::from).collect();
     if port_id_parts.len() != 2 {

@@ -232,6 +232,10 @@ process_era() {
   query="$(printf '{"delegations": {"pool_addr": "%s"}}' "$pool_address")"
   echo "the query is $query"
   neutrond query wasm contract-state smart "$contract_address" "$query" --node "$NEUTRON_NODE" --output json | jq
+  
+  query="$(printf '{"era_rate": {"pool_addr": "%s","era": 1}}' "$pool_address")"
+  echo "the query is $query"
+  neutrond query wasm contract-state smart "$contract_address" "$query" --node "$NEUTRON_NODE" --output json | jq
 
   # withdraw_addr="cosmos10h9stc5v6ntgeygf5xf945njqq5h32r53uquvw"query_id=3
   echo "---------------------------------------------------------------"
