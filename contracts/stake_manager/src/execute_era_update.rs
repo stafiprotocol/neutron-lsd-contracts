@@ -38,6 +38,11 @@ pub fn execute_era_update(
     {
         return Err(ContractError::StatusNotAllow {}.into());
     }
+
+    if pool_info.active.is_zero() && pool_info.bond.is_zero() && pool_info.unbond.is_zero() {
+        return Err(ContractError::StatusNotAllow {}.into());
+    }
+
     let current_era = env
         .block
         .time
@@ -49,8 +54,18 @@ pub fn execute_era_update(
         return Err(ContractError::AlreadyLatestEra {}.into());
     }
 
+    let new_era = if (!pool_info.active.is_zero()
+        || !pool_info.bond.is_zero()
+        || !pool_info.unbond.is_zero())
+        && pool_info.era == 0
+    {
+        current_era
+    } else {
+        pool_info.era.add(1)
+    };
+
     pool_info.status = EraUpdateStarted;
-    pool_info.era = pool_info.era.add(1);
+    pool_info.era = new_era;
     pool_info.era_snapshot = EraSnapshot {
         era: pool_info.era,
         bond: pool_info.bond,

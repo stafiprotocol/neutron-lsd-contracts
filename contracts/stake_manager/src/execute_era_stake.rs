@@ -172,6 +172,13 @@ pub fn execute_era_stake(
         }
     }
 
+    if msgs.len() == 0 {
+        pool_info.status = EraStakeEnded;
+        POOLS.save(deps.storage, pool_addr, &pool_info)?;
+
+        return Ok(Response::default());
+    }
+
     let (pool_ica_info, _, _) = INFO_OF_ICA_ID.load(deps.storage, pool_info.ica_id.clone())?;
 
     let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
