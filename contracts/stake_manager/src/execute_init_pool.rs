@@ -1,5 +1,6 @@
 use crate::helper::{
-    self, deal_pool, set_withdraw_sub_msg, CAL_BASE, DEFAULT_ERA_SECONDS, MIN_ERA_SECONDS,
+    self, deal_pool, min_ntrn_ibc_fee, query_icq_register_fee, set_withdraw_sub_msg,
+    total_icq_register_fee, CAL_BASE, DEFAULT_ERA_SECONDS, MIN_ERA_SECONDS,
 };
 use crate::msg::InitPoolParams;
 use crate::state::ValidatorUpdateStatus;
@@ -8,11 +9,12 @@ use crate::state::{INFO_OF_ICA_ID, STACK};
 use crate::{error_conversion::ContractError, state::EraStatus};
 use cosmwasm_std::{Addr, Uint128};
 use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+use neutron_sdk::query::min_ibc_fee::query_min_ibc_fee;
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
     NeutronResult,
 };
-use std::ops::Div;
+use std::ops::{Add, Div, Mul};
 use std::vec;
 
 // add execute to config the validator addrs and withdraw address on reply
@@ -35,17 +37,39 @@ pub fn execute_init_pool(
     if info.sender != pool_info.admin {
         return Err(ContractError::Unauthorized {}.into());
     }
+
+    if info.funds.len() != 1 || info.funds[0].denom != helper::FEE_DENOM {
+        return Err(ContractError::ParamsErrorFundsNotMatch {}.into());
+    }
+
+    let ibc_fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
+    let total_ibc_fee = helper::total_ibc_fee(ibc_fee.clone());
+
     if pool_info.status == EraStatus::InitFailed {
+        if info.funds[0].amount < total_ibc_fee {
+            return Err(ContractError::ParamsErrorFundsNotMatch {}.into());
+        }
+
         return Ok(Response::new().add_submessage(set_withdraw_sub_msg(
             deps,
             pool_info,
             pool_ica_info,
             withdraw_ica_info,
+            ibc_fee,
         )?));
     }
 
     if pool_info.status != EraStatus::RegisterEnded {
         return Err(ContractError::StatusNotAllow {}.into());
+    }
+
+    let icq_register_fee = query_icq_register_fee(deps.as_ref())?;
+    if info.funds[0].amount
+        < total_icq_register_fee(icq_register_fee)
+            .mul(Uint128::new(4))
+            .add(total_ibc_fee)
+    {
+        return Err(ContractError::ParamsErrorFundsNotMatch {}.into());
     }
 
     pool_info.ibc_denom = param.ibc_denom;
@@ -109,5 +133,6 @@ pub fn execute_init_pool(
         code_id,
         param.lsd_token_name,
         param.lsd_token_symbol,
+        ibc_fee,
     )
 }

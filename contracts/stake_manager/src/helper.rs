@@ -1,8 +1,11 @@
+use std::ops::Add;
+
 use cosmos_sdk_proto::cosmos::base::v1beta1::Coin;
 use cosmos_sdk_proto::cosmos::distribution::v1beta1::MsgSetWithdrawAddress;
 use cosmos_sdk_proto::cosmos::staking::v1beta1::{MsgBeginRedelegate, MsgDelegate};
 use cosmos_sdk_proto::prost::Message;
-use cosmwasm_std::{instantiate2_address, to_json_binary, SubMsg, WasmMsg};
+use cosmwasm_schema::cw_serde;
+use cosmwasm_std::{instantiate2_address, to_json_binary, SubMsg, Uint64, WasmMsg};
 use cosmwasm_std::{Binary, Deps, DepsMut, QueryRequest, StdResult, Uint128};
 use cosmwasm_std::{Env, MessageInfo, Response};
 use cw20::MinterResponse;
@@ -17,7 +20,7 @@ use neutron_sdk::interchain_queries::v045::{
     new_register_balance_query_msg, new_register_staking_validators_query_msg,
 };
 use neutron_sdk::NeutronError;
-use neutron_sdk::{query::min_ibc_fee::query_min_ibc_fee, NeutronResult};
+use neutron_sdk::NeutronResult;
 
 use crate::query_callback::register_query_submsg;
 use crate::state::{IcaInfo, PoolInfo, QueryKind, SudoPayload, TxType, POOLS};
@@ -25,7 +28,7 @@ use crate::state::{ADDRESS_TO_REPLY_ID, INFO_OF_ICA_ID, REPLY_ID_TO_QUERY_ID};
 use crate::tx_callback::msg_with_sudo_callback;
 use crate::{error_conversion::ContractError, state::EraStatus};
 
-const FEE_DENOM: &str = "untrn";
+pub const FEE_DENOM: &str = "untrn";
 pub const ICA_WITHDRAW_SUFIX: &str = "-withdraw_addr";
 pub const INTERCHAIN_ACCOUNT_ID_LEN_LIMIT: usize = 16;
 pub const CAL_BASE: Uint128 = Uint128::new(1_000_000);
@@ -49,7 +52,11 @@ pub const QUERY_REPLY_ID_RANGE_END: u64 = QUERY_REPLY_ID_RANGE_START + QUERY_REP
 
 pub fn min_ntrn_ibc_fee(fee: IbcFee) -> IbcFee {
     IbcFee {
-        recv_fee: fee.recv_fee,
+        recv_fee: fee
+            .recv_fee
+            .into_iter()
+            .filter(|a| a.denom == FEE_DENOM)
+            .collect(),
         ack_fee: fee
             .ack_fee
             .into_iter()
@@ -61,6 +68,26 @@ pub fn min_ntrn_ibc_fee(fee: IbcFee) -> IbcFee {
             .filter(|a| a.denom == FEE_DENOM)
             .collect(),
     }
+}
+
+pub fn total_ibc_fee(ibc_fee: IbcFee) -> Uint128 {
+    let recv_fee = if ibc_fee.recv_fee.len() > 0 {
+        ibc_fee.recv_fee[0].amount
+    } else {
+        Uint128::zero()
+    };
+    let ack_fee = if ibc_fee.ack_fee.len() > 0 {
+        ibc_fee.ack_fee[0].amount
+    } else {
+        Uint128::zero()
+    };
+    let time_out_fee = if ibc_fee.timeout_fee.len() > 0 {
+        ibc_fee.timeout_fee[0].amount
+    } else {
+        Uint128::zero()
+    };
+
+    recv_fee.add(ack_fee).add(time_out_fee)
 }
 
 pub fn gen_delegation_txs(
@@ -276,6 +303,7 @@ pub fn deal_pool(
     lsd_code_id: u64,
     lsd_token_name: String,
     lsd_token_symbol: String,
+    ibc_fee: IbcFee,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let denom_trace = query_denom_trace_from_ibc_denom(deps.as_ref(), pool_info.ibc_denom.clone())?;
     if denom_trace.denom_trace.base_denom != pool_info.remote_denom {
@@ -374,6 +402,7 @@ pub fn deal_pool(
         pool_info,
         pool_ica_info,
         withdraw_ica_info,
+        ibc_fee,
     )?);
 
     Ok(Response::default()
@@ -386,6 +415,7 @@ pub fn set_withdraw_sub_msg(
     pool_info: PoolInfo,
     pool_ica_info: IcaInfo,
     withdraw_ica_info: IcaInfo,
+    fee: IbcFee,
 ) -> NeutronResult<SubMsg<NeutronMsg>> {
     let set_withdraw_msg = MsgSetWithdrawAddress {
         delegator_address: pool_ica_info.ica_addr.clone(),
@@ -397,8 +427,6 @@ pub fn set_withdraw_sub_msg(
     if let Err(e) = set_withdraw_msg.encode(&mut buf) {
         return Err(ContractError::EncodeError(e.to_string()).into());
     }
-
-    let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
     let cosmos_msg = NeutronMsg::submit_tx(
         pool_ica_info.ctrl_connection_id.clone(),
         pool_info.ica_id.clone(),
@@ -408,7 +436,7 @@ pub fn set_withdraw_sub_msg(
         }],
         "".to_string(),
         DEFAULT_TIMEOUT_SECONDS,
-        fee.clone(),
+        fee,
     );
 
     // We use a submessage here because we need the process message reply to save
@@ -495,4 +523,41 @@ pub fn deal_validators_icq_update(
         update_pool_delegations_msg,
         update_pool_validators_msg,
     ]))
+}
+
+#[cw_serde]
+struct IcqParams {
+    query_submit_timeout: Uint64,
+    query_deposit: Vec<cosmwasm_std::Coin>,
+    tx_query_removal_limit: Uint64,
+}
+
+impl IcqParams {
+    const TYPE_URL: &'static str = "/neutron.interchainqueries.Query/Params";
+}
+
+#[cw_serde]
+struct QueryIcqParamsResponse {
+    params: IcqParams,
+}
+
+pub fn query_icq_register_fee(deps: Deps<NeutronQuery>) -> StdResult<Vec<cosmwasm_std::Coin>> {
+    let res: QueryIcqParamsResponse = deps.querier.query(&QueryRequest::Stargate {
+        path: IcqParams::TYPE_URL.to_owned(),
+        data: Binary(vec![]),
+    })?;
+
+    let coin = res.params.query_deposit;
+    Ok(coin)
+}
+
+pub fn total_icq_register_fee(fee: Vec<cosmwasm_std::Coin>) -> Uint128 {
+    let filter_fee: Vec<cosmwasm_std::Coin> =
+        fee.into_iter().filter(|a| a.denom == FEE_DENOM).collect();
+
+    if filter_fee.len() > 0 {
+        filter_fee[0].amount
+    } else {
+        Uint128::zero()
+    }
 }
