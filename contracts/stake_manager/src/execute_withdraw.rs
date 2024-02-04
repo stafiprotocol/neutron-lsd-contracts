@@ -141,7 +141,8 @@ pub fn sudo_withdraw_callback(
         .collect::<Vec<String>>()
         .join("_");
 
-    if let Some((_, index_list)) = parts.split_first() {
+    // retrieve unstake index list
+    if let Some(index_list) = parts.get(3..parts.len()) {
         if let Some(mut unstakes) = UNSTAKES_INDEX_FOR_USER
             .may_load(deps.storage, (user_addr.clone(), payload.pool_addr.clone()))?
         {
