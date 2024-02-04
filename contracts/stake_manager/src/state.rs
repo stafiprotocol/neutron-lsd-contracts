@@ -12,7 +12,7 @@ pub struct Stack {
     pub stack_fee_receiver: Addr,
     pub stack_fee_commission: Uint128,
     pub total_stack_fee: Uint128,
-    pub pools: Vec<String>,
+    pub entrusted_pools: Vec<String>,
     pub lsd_token_code_id: u64,
 }
 

@@ -33,14 +33,14 @@ pub fn execute_config_stack(
         stack.lsd_token_code_id = lsd_token_code_id;
     }
     if let Some(add_entrusted_pool) = param.add_entrusted_pool {
-        if !stack.pools.contains(&add_entrusted_pool) {
-            stack.pools.push(add_entrusted_pool);
+        if !stack.entrusted_pools.contains(&add_entrusted_pool) {
+            stack.entrusted_pools.push(add_entrusted_pool);
         }
     }
     if let Some(remove_entrusted_pool) = param.remove_entrusted_pool {
-        if stack.pools.contains(&remove_entrusted_pool) {
+        if stack.entrusted_pools.contains(&remove_entrusted_pool) {
             stack
-                .pools
+                .entrusted_pools
                 .retain(|p| p.to_string() != remove_entrusted_pool);
         }
     }

@@ -69,7 +69,7 @@ pub fn instantiate(
             stack_fee_receiver: msg.stack_fee_receiver,
             stack_fee_commission: Uint128::new(100_000),
             total_stack_fee: Uint128::zero(),
-            pools: vec![],
+            entrusted_pools: vec![],
             lsd_token_code_id: msg.lsd_token_code_id,
         }),
     )?;
