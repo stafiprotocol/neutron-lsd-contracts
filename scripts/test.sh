@@ -9,6 +9,7 @@
 . ./scripts/config_pool.sh
 . ./scripts/era.sh
 . ./scripts/user.sh
+. ./scripts/config_unbonding_seconds.sh
 
 # create stake-manager contract -> create lsd_token contract --> send gas to stake manager -> test stake -> test unstake -> test new era
 
@@ -40,7 +41,10 @@ ADMIN="neutron1m9l358xunhhwds0568za49mzhvuxx9ux8xafx2"
 VALIDATOR="cosmosvaloper18hl5c9xn5dze2g50uaw0l2mr02ew57zk0auktn"
 
 deploy
+
 init_stack
+config_unbonding_seconds
+
 register_pool
 init_pool
 config_pool

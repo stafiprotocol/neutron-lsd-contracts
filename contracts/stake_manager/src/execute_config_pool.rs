@@ -1,16 +1,19 @@
-use cosmwasm_std::{Addr, DepsMut, MessageInfo, Response};
+use std::ops::{Div, Sub};
+
+use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response};
 
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
     NeutronResult,
 };
 
-use crate::{error_conversion::ContractError, msg::ConfigPoolParams};
-use crate::{helper::MIN_ERA_SECONDS, state::POOLS};
+use crate::{error_conversion::ContractError, msg::ConfigPoolParams, state::UNBONDING_SECONDS};
+use crate::{helper::MAX_ERA_SECONDS, helper::MIN_ERA_SECONDS, state::POOLS};
 
 pub fn execute_config_pool(
     deps: DepsMut<NeutronQuery>,
     info: MessageInfo,
+    env: Env,
     param: ConfigPoolParams,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info = POOLS.load(deps.as_ref().storage, param.pool_addr.clone())?;
@@ -21,9 +24,6 @@ pub fn execute_config_pool(
 
     if let Some(minimal_stake) = param.minimal_stake {
         pool_info.minimal_stake = minimal_stake;
-    }
-    if let Some(unbonding_period) = param.unbonding_period {
-        pool_info.unbonding_period = unbonding_period;
     }
     if let Some(unstake_times_limit) = param.unstake_times_limit {
         pool_info.unstake_times_limit = unstake_times_limit;
@@ -38,10 +38,27 @@ pub fn execute_config_pool(
         if era_seconds < MIN_ERA_SECONDS {
             return Err(ContractError::LessThanMinimalEraSeconds {}.into());
         }
+        if era_seconds > MAX_ERA_SECONDS {
+            return Err(ContractError::ExceedMaxEraSeconds {}.into());
+        }
+        let current_era = env
+            .block
+            .time
+            .seconds()
+            .div(pool_info.era_seconds)
+            .saturating_add_signed(pool_info.offset);
+
         pool_info.era_seconds = era_seconds;
-    }
-    if let Some(offset) = param.offset {
-        pool_info.offset = offset;
+
+        pool_info.offset =
+            (env.block.time.seconds().div(pool_info.era_seconds) as i64).sub(current_era as i64);
+
+        let unbonding_seconds =
+            UNBONDING_SECONDS.load(deps.storage, pool_info.remote_denom.clone())?;
+        pool_info.unbonding_period = ((unbonding_seconds as f64)
+            .div(pool_info.era_seconds as f64)
+            .ceil() as u64)
+            + 1;
     }
     if let Some(receiver) = param.platform_fee_receiver {
         pool_info.platform_fee_receiver = Addr::unchecked(receiver);

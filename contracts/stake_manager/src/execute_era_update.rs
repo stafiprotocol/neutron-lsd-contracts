@@ -48,7 +48,7 @@ pub fn execute_era_update(
         .time
         .seconds()
         .div(pool_info.era_seconds)
-        .sub(pool_info.offset);
+        .saturating_add_signed(pool_info.offset);
 
     if current_era <= pool_info.era {
         return Err(ContractError::AlreadyLatestEra {}.into());

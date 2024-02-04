@@ -13,8 +13,7 @@ init_pool() {
       "platform_fee_receiver": "%s",
       "lsd_token_name": "lsdTokenNameX",
       "lsd_token_symbol": "symbolX",
-      "minimal_stake": "100",
-      "unbonding_period": 1
+      "minimal_stake": "100"
     }
   }' "$ADDRESS_1")
 

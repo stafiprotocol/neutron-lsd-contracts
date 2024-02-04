@@ -6,8 +6,7 @@ config_pool() {
   msg=$(printf '{
   "config_pool": {
     "pool_addr": "%s",
-    "lsm_support": true,
-    "offset": 6
+    "lsm_support": true
   }
 }' "$pool_address")
   # echo "config pool msg is: $msg"
@@ -44,4 +43,8 @@ config_pool() {
   if [[ "$code" -ne 0 ]]; then
     echo "Failed to config pool: $(echo "$tx_result" | jq '.raw_log')" && exit 1
   fi
+
+  query="$(printf '{"pool_info": {"pool_addr": "%s"}}' "$pool_address")"
+  echo "------------------------ pool_info after config ------------------------"
+  neutrond query wasm contract-state smart "$contract_address" "$query" --node "$NEUTRON_NODE" --output json | jq
 }

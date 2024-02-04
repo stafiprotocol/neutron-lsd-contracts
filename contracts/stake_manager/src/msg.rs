@@ -59,6 +59,8 @@ pub enum QueryMsg {
     },
     #[returns(Uint128)]
     EraRate { pool_addr: String, era: u64 },
+    #[returns(u64)]
+    UnbondingSeconds { denom: String },
 }
 
 #[cw_serde]
@@ -73,9 +75,7 @@ pub struct InitPoolParams {
     pub lsd_token_name: String,
     pub lsd_token_symbol: String,
     pub minimal_stake: Uint128,
-    pub unbonding_period: u64,
     pub platform_fee_commission: Option<Uint128>,
-    pub era_seconds: Option<u64>,
 }
 
 #[cw_serde]
@@ -95,11 +95,9 @@ pub struct ConfigPoolParams {
     pub platform_fee_receiver: Option<String>,
     pub minimal_stake: Option<Uint128>,
     pub unstake_times_limit: Option<u64>,
-    pub unbonding_period: Option<u64>,
     pub unbond_commission: Option<Uint128>,
     pub platform_fee_commission: Option<Uint128>,
     pub era_seconds: Option<u64>,
-    pub offset: Option<u64>,
     pub paused: Option<bool>,
     pub lsm_support: Option<bool>,
     pub lsm_pending_limit: Option<u64>,
@@ -116,6 +114,10 @@ pub enum ExecuteMsg {
     InitPool(Box<InitPoolParams>),
     ConfigPool(Box<ConfigPoolParams>),
     ConfigStack(Box<ConfigStackParams>),
+    ConfigUnbondingSeconds {
+        denom: String,
+        unbonding_seconds: Option<u64>,
+    },
     OpenChannel {
         pool_addr: String,
         closed_channel_id: String,

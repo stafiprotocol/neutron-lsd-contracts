@@ -42,7 +42,7 @@ pub struct PoolInfo {
     pub era: u64,
     pub rate: Uint128,
     pub era_seconds: u64,
-    pub offset: u64,
+    pub offset: i64,
     pub minimal_stake: Uint128,
     pub unstake_times_limit: u64,
     pub next_unstake_index: u64,
@@ -249,3 +249,6 @@ pub const VALIDATORS_UNBONDS_TIME: Map<(String, String), Vec<u64>> =
 
 // (pool, era) -> rate
 pub const ERA_RATE: Map<(String, u64), Uint128> = Map::new("era_rate");
+
+// denom -> unbonding_seconds
+pub const UNBONDING_SECONDS: Map<String, u64> = Map::new("unbonding_seconds");
