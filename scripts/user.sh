@@ -34,13 +34,7 @@ EOF
         echo "Failed to send ibc hook to contract: $(echo "$tx_result" | jq '.raw_log')" && exit 1
     fi
     echo "$tx_hash"
-    echo "Waiting 15 seconds for stake (sometimes it takes a lot of time)…"
-    # shellcheck disable=SC2034
-    for i in $(seq 15); do
-        sleep 1
-        echo -n .
-    done
-    echo " done"
+    print_wait_msg 15 "Waiting 15 seconds for stake (sometimes it takes a lot of time)…"
 
     query="$(printf '{"balance": {"address": "%s"}}' "$ADDRESS_1")"
     neutrond query wasm contract-state smart "$lsd_token_contract_address" "$query" --output json | jq
@@ -74,13 +68,7 @@ user_stake_on_neutron() {
         echo "Failed to send ibc hook to contract: $(echo "$tx_result" | jq '.raw_log')" && exit 1
     fi
     echo "$tx_hash"
-    echo "Waiting 15 seconds for stake (sometimes it takes a lot of time)…"
-    # shellcheck disable=SC2034
-    for i in $(seq 15); do
-        sleep 1
-        echo -n .
-    done
-    echo " done"
+    print_wait_msg 15 "Waiting 15 seconds for stake (sometimes it takes a lot of time)…"
 
     query="$(printf '{"balance": {"address": "%s"}}' "$ADDRESS_1")"
     neutrond query wasm contract-state smart "$lsd_token_contract_address" "$query" --output json | jq
@@ -161,13 +149,7 @@ user_withdraw() {
         echo "Failed to withdraw msg: $(echo "$tx_result" | jq '.raw_log')" && exit 1
     fi
 
-    echo "Waiting 10 seconds for withdraw (sometimes it takes a lot of time)…"
-    # shellcheck disable=SC2034
-    for i in $(seq 10); do
-        sleep 1
-        echo -n .
-    done
-    echo " done"
+    print_wait_msg 11 "Waiting 10 seconds for withdraw (sometimes it takes a lot of time)…"
 
     echo "pool_address balance Query"
     gaiad query bank balances "$pool_address" --node "$GAIA_NODE" --output json | jq
@@ -192,13 +174,7 @@ user_stake_lsm() {
     fi
     echo "$tx_hash"
 
-    echo "Waiting 5 seconds for delegate  (sometimes it takes a lot of time)…"
-    # shellcheck disable=SC2034
-    for i in $(seq 5); do
-        sleep 1
-        echo -n .
-    done
-    echo " done"
+    print_wait_msg 5 "Waiting 5 seconds for delegate  (sometimes it takes a lot of time)…"
 
     tx_result=$(gaiad tx staking tokenize-share "$VALIDATOR" 6000uatom "$ADDRESS_2" \
         --gas auto --gas-adjustment 1.4 \
@@ -213,13 +189,7 @@ user_stake_lsm() {
     fi
     echo "$tx_hash"
 
-    echo "Waiting 5 seconds for tokenize  (sometimes it takes a lot of time)…"
-    # shellcheck disable=SC2034
-    for i in $(seq 5); do
-        sleep 1
-        echo -n .
-    done
-    echo " done"
+    print_wait_msg 5 "Waiting 5 seconds for tokenize  (sometimes it takes a lot of time)…"
 
     share_token_denom=$(gaiad q bank balances $ADDRESS_2 --node "$GAIA_NODE" --output json | jq ".balances[0].denom" | sed 's/\"//g')
     share_token_amount=$(gaiad q bank balances $ADDRESS_2 --node "$GAIA_NODE" --output json | jq ".balances[0].amount" | sed 's/\"//g')
@@ -257,13 +227,7 @@ EOF
     fi
     echo "$tx_hash"
 
-    echo "Waiting 15 seconds for lsd_token mint (sometimes it takes a lot of time)…"
-    # shellcheck disable=SC2034
-    for i in $(seq 15); do
-        sleep 1
-        echo -n .
-    done
-    echo " done"
+    print_wait_msg 15 "Waiting 15 seconds for lsd_token mint (sometimes it takes a lot of time)…"
 
     query="$(printf '{"balance": {"address": "%s"}}' "$ADDRESS_1")"
     neutrond query wasm contract-state smart "$lsd_token_contract_address" "$query" --output json | jq

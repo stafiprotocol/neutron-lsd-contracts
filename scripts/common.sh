@@ -27,3 +27,13 @@ wait_tx_gaia() {
         sleep 0.5
     done
 }
+
+print_wait_msg() {
+    echo $2
+    # shellcheck disable=SC2034
+    for i in $(seq $1); do
+        sleep 1
+        echo -n .
+    done
+    echo " done"
+}

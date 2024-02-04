@@ -19,14 +19,7 @@ register_pool() {
     echo "Failed to register interchain account: $(echo "$tx_result" | jq '.raw_log')" && exit 1
   fi
 
-  echo "Waiting 15 seconds for interchain account (sometimes it takes a lot of time)…"
-
-  # shellcheck disable=SC2034
-  for i in $(seq 15); do
-    sleep 1
-    echo -n .
-  done
-  echo " done"
+  print_wait_msg 15 "Waiting 15 seconds for interchain account (sometimes it takes a lot of time)…"
 
   query='{"interchain_account_address_from_contract":{"interchain_account_id":"test1"}}'
   echo "info of pool ica id is: "
@@ -67,11 +60,5 @@ register_pool() {
   fi
   echo "$tx_hash"
 
-  echo "Waiting 10 seconds for ibc relay (sometimes it takes a lot of time)…"
-  # shellcheck disable=SC2034
-  for i in $(seq 10); do
-    sleep 1
-    echo -n .
-  done
-  echo " done"
+  print_wait_msg 10 "Waiting 10 seconds for ibc relay (sometimes it takes a lot of time)…"
 }

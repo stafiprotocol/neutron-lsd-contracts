@@ -33,13 +33,7 @@ init_pool() {
     echo "Failed to init pool: $(echo "$tx_result" | jq '.raw_log')" && exit 1
   fi
 
-  echo "Waiting 10 seconds for init pool (sometimes it takes a lot of time)…"
-  # shellcheck disable=SC2034
-  for i in $(seq 10); do
-    sleep 1
-    echo -n .
-  done
-  echo " done"
+  print_wait_msg 10 "Waiting 10 seconds for init pool (sometimes it takes a lot of time)…"
 
   echo "------------------------ pool_info after init  ------------------------"
   query="$(printf '{"pool_info": {"pool_addr": "%s"}}' "$pool_address")"
