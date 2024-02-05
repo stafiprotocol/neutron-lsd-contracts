@@ -1,7 +1,7 @@
+use crate::error_conversion::ContractError;
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{from_json, to_json_vec, Addr, Binary, StdResult, Storage, Uint128};
 use cw_storage_plus::{Item, Map};
-use crate::error_conversion::ContractError;
 
 use crate::helper::{
     QUERY_REPLY_ID_RANGE_END, QUERY_REPLY_ID_RANGE_START, REPLY_ID_RANGE_END, REPLY_ID_RANGE_START,
@@ -20,7 +20,7 @@ pub struct Stack {
 impl Stack {
     pub fn authorize(&self, addr: &Addr) -> neutron_sdk::NeutronResult<()> {
         if addr == self.admin {
-            return Ok(())
+            return Ok(());
         }
         Err(ContractError::Unauthorized {}.into())
     }
@@ -77,7 +77,7 @@ pub struct PoolInfo {
 impl PoolInfo {
     pub fn authorize(&self, addr: &Addr) -> neutron_sdk::NeutronResult<()> {
         if addr == self.admin {
-            return Ok(())
+            return Ok(());
         }
         Err(ContractError::Unauthorized {}.into())
     }

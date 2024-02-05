@@ -23,8 +23,7 @@ pub fn execute_pool_update_validator(
     old_validator: String,
     new_validator: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
-    let mut pool_info: crate::state::PoolInfo =
-        POOLS.load(deps.storage, pool_addr.clone())?;
+    let mut pool_info: crate::state::PoolInfo = POOLS.load(deps.storage, pool_addr.clone())?;
     pool_info.authorize(&info.sender)?;
 
     if pool_info.status != EraStatus::ActiveEnded {

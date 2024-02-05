@@ -5,8 +5,8 @@ use neutron_sdk::{
     NeutronResult,
 };
 
-use crate::state::STACK;
 use crate::msg::ConfigStackParams;
+use crate::state::STACK;
 
 pub fn execute_config_stack(
     deps: DepsMut<NeutronQuery>,
