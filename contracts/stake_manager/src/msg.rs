@@ -60,7 +60,7 @@ pub enum QueryMsg {
     #[returns(Uint128)]
     EraRate { pool_addr: String, era: u64 },
     #[returns(u64)]
-    UnbondingSeconds { denom: String },
+    UnbondingSeconds { remote_denom: String },
 }
 
 #[cw_serde]

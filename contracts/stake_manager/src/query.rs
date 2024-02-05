@@ -59,9 +59,12 @@ pub fn query_era_rate(
     )?)
 }
 
-pub fn query_unbonding_seconds(deps: Deps<NeutronQuery>, denom: String) -> NeutronResult<Binary> {
+pub fn query_unbonding_seconds(
+    deps: Deps<NeutronQuery>,
+    rename_denom: String,
+) -> NeutronResult<Binary> {
     Ok(to_json_binary(
-        &UNBONDING_SECONDS.may_load(deps.storage, denom)?,
+        &UNBONDING_SECONDS.may_load(deps.storage, rename_denom)?,
     )?)
 }
 

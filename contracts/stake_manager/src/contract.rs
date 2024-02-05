@@ -124,7 +124,7 @@ pub fn query(deps: Deps<NeutronQuery>, env: Env, msg: QueryMsg) -> NeutronResult
             user_neutron_addr,
         } => query_user_unstake_index(deps, pool_addr, user_neutron_addr),
         QueryMsg::EraRate { pool_addr, era } => query_era_rate(deps, pool_addr, era),
-        QueryMsg::UnbondingSeconds { denom } => query_unbonding_seconds(deps, denom),
+        QueryMsg::UnbondingSeconds { remote_denom } => query_unbonding_seconds(deps, remote_denom),
     }
 }
 
