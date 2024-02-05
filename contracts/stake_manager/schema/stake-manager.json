@@ -96,6 +96,35 @@
       {
         "type": "object",
         "required": [
+          "config_unbonding_seconds"
+        ],
+        "properties": {
+          "config_unbonding_seconds": {
+            "type": "object",
+            "required": [
+              "denom"
+            ],
+            "properties": {
+              "denom": {
+                "type": "string"
+              },
+              "unbonding_seconds": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "uint64",
+                "minimum": 0.0
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
           "open_channel"
         ],
         "properties": {
@@ -556,14 +585,6 @@
               }
             ]
           },
-          "offset": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "uint64",
-            "minimum": 0.0
-          },
           "paused": {
             "type": [
               "boolean",
@@ -608,14 +629,6 @@
                 "type": "null"
               }
             ]
-          },
-          "unbonding_period": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "uint64",
-            "minimum": 0.0
           },
           "unstake_times_limit": {
             "type": [
@@ -705,20 +718,11 @@
           "minimal_stake",
           "platform_fee_receiver",
           "remote_denom",
-          "unbonding_period",
           "validator_addrs"
         ],
         "properties": {
           "channel_id_of_ibc_denom": {
             "type": "string"
-          },
-          "era_seconds": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "uint64",
-            "minimum": 0.0
           },
           "ibc_denom": {
             "type": "string"
@@ -758,11 +762,6 @@
           },
           "remote_denom": {
             "type": "string"
-          },
-          "unbonding_period": {
-            "type": "integer",
-            "format": "uint64",
-            "minimum": 0.0
           },
           "validator_addrs": {
             "type": "array",
@@ -1065,6 +1064,27 @@
                 "minimum": 0.0
               },
               "pool_addr": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "unbonding_seconds"
+        ],
+        "properties": {
+          "unbonding_seconds": {
+            "type": "object",
+            "required": [
+              "denom"
+            ],
+            "properties": {
+              "denom": {
                 "type": "string"
               }
             },
@@ -1825,8 +1845,7 @@
         },
         "offset": {
           "type": "integer",
-          "format": "uint64",
-          "minimum": 0.0
+          "format": "int64"
         },
         "paused": {
           "type": "boolean"
@@ -1987,8 +2006,8 @@
       "type": "object",
       "required": [
         "admin",
+        "entrusted_pools",
         "lsd_token_code_id",
-        "pools",
         "stack_fee_commission",
         "stack_fee_receiver",
         "total_stack_fee"
@@ -1997,16 +2016,16 @@
         "admin": {
           "$ref": "#/definitions/Addr"
         },
-        "lsd_token_code_id": {
-          "type": "integer",
-          "format": "uint64",
-          "minimum": 0.0
-        },
-        "pools": {
+        "entrusted_pools": {
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "lsd_token_code_id": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
         },
         "stack_fee_commission": {
           "$ref": "#/definitions/Uint128"
@@ -2029,6 +2048,13 @@
           "type": "string"
         }
       }
+    },
+    "unbonding_seconds": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "uint64",
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0.0
     },
     "user_unstake": {
       "$schema": "http://json-schema.org/draft-07/schema#",

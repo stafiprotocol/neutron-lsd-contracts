@@ -4,8 +4,8 @@
   "type": "object",
   "required": [
     "admin",
+    "entrusted_pools",
     "lsd_token_code_id",
-    "pools",
     "stack_fee_commission",
     "stack_fee_receiver",
     "total_stack_fee"
@@ -14,16 +14,16 @@
     "admin": {
       "$ref": "#/definitions/Addr"
     },
-    "lsd_token_code_id": {
-      "type": "integer",
-      "format": "uint64",
-      "minimum": 0.0
-    },
-    "pools": {
+    "entrusted_pools": {
       "type": "array",
       "items": {
         "type": "string"
       }
+    },
+    "lsd_token_code_id": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0.0
     },
     "stack_fee_commission": {
       "$ref": "#/definitions/Uint128"

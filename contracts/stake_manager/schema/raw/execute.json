@@ -66,6 +66,35 @@
     {
       "type": "object",
       "required": [
+        "config_unbonding_seconds"
+      ],
+      "properties": {
+        "config_unbonding_seconds": {
+          "type": "object",
+          "required": [
+            "denom"
+          ],
+          "properties": {
+            "denom": {
+              "type": "string"
+            },
+            "unbonding_seconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
         "open_channel"
       ],
       "properties": {
@@ -526,14 +555,6 @@
             }
           ]
         },
-        "offset": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint64",
-          "minimum": 0.0
-        },
         "paused": {
           "type": [
             "boolean",
@@ -578,14 +599,6 @@
               "type": "null"
             }
           ]
-        },
-        "unbonding_period": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint64",
-          "minimum": 0.0
         },
         "unstake_times_limit": {
           "type": [
@@ -675,20 +688,11 @@
         "minimal_stake",
         "platform_fee_receiver",
         "remote_denom",
-        "unbonding_period",
         "validator_addrs"
       ],
       "properties": {
         "channel_id_of_ibc_denom": {
           "type": "string"
-        },
-        "era_seconds": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint64",
-          "minimum": 0.0
         },
         "ibc_denom": {
           "type": "string"
@@ -728,11 +732,6 @@
         },
         "remote_denom": {
           "type": "string"
-        },
-        "unbonding_period": {
-          "type": "integer",
-          "format": "uint64",
-          "minimum": 0.0
         },
         "validator_addrs": {
           "type": "array",
