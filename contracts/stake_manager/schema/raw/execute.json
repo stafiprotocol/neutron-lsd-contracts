@@ -72,10 +72,10 @@
         "config_unbonding_seconds": {
           "type": "object",
           "required": [
-            "denom"
+            "remote_denom"
           ],
           "properties": {
-            "denom": {
+            "remote_denom": {
               "type": "string"
             },
             "unbonding_seconds": {

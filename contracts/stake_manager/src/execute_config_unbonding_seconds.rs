@@ -9,7 +9,7 @@ use neutron_sdk::{
 pub fn execute_config_unbonding_seconds(
     deps: DepsMut<NeutronQuery>,
     info: MessageInfo,
-    denom: String,
+    remote_denom: String,
     unbonding_seconds: Option<u64>,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let stack = STACK.load(deps.storage)?;
@@ -18,9 +18,9 @@ pub fn execute_config_unbonding_seconds(
     }
 
     if let Some(unbonding_seconds) = unbonding_seconds {
-        UNBONDING_SECONDS.save(deps.storage, denom, &unbonding_seconds)?;
+        UNBONDING_SECONDS.save(deps.storage, remote_denom, &unbonding_seconds)?;
     } else {
-        UNBONDING_SECONDS.remove(deps.storage, denom);
+        UNBONDING_SECONDS.remove(deps.storage, remote_denom);
     }
 
     Ok(Response::default())

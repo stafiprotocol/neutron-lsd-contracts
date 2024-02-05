@@ -115,7 +115,7 @@ pub enum ExecuteMsg {
     ConfigPool(Box<ConfigPoolParams>),
     ConfigStack(Box<ConfigStackParams>),
     ConfigUnbondingSeconds {
-        denom: String,
+        remote_denom: String,
         unbonding_seconds: Option<u64>,
     },
     OpenChannel {

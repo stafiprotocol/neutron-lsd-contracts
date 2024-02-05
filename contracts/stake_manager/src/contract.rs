@@ -144,9 +144,9 @@ pub fn execute(
         ExecuteMsg::ConfigPool(params) => execute_config_pool(deps, info, env, *params),
         ExecuteMsg::ConfigStack(params) => execute_config_stack(deps, info, *params),
         ExecuteMsg::ConfigUnbondingSeconds {
-            denom,
+            remote_denom,
             unbonding_seconds,
-        } => execute_config_unbonding_seconds(deps, info, denom, unbonding_seconds),
+        } => execute_config_unbonding_seconds(deps, info, remote_denom, unbonding_seconds),
         ExecuteMsg::OpenChannel {
             pool_addr,
             closed_channel_id,
