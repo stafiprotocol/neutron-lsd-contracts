@@ -1,4 +1,4 @@
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+use cosmwasm_std::{DepsMut, MessageInfo, Response};
 
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
@@ -11,7 +11,6 @@ use crate::{error_conversion::ContractError, helper};
 
 pub fn execute_add_pool_validators(
     deps: DepsMut<NeutronQuery>,
-    _: Env,
     info: MessageInfo,
     pool_addr: String,
     validator_addr: String,

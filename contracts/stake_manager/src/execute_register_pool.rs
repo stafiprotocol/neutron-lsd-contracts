@@ -108,7 +108,6 @@ pub fn execute_register_pool(
 // handler register pool
 pub fn sudo_open_ack(
     deps: DepsMut,
-    _: Env,
     port_id: String,
     _channel_id: String,
     _counterparty_channel_id: String,

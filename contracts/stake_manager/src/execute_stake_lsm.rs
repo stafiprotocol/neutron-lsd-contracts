@@ -206,10 +206,7 @@ pub fn sudo_stake_lsm_callback(
         .add_attribute("lsd_token_amount", lsd_token_amount))
 }
 
-pub fn sudo_stake_lsm_failed_callback(
-    _: DepsMut,
-    payload: SudoPayload,
-) -> NeutronResult<Response<NeutronMsg>> {
+pub fn sudo_stake_lsm_failed_callback(payload: SudoPayload) -> NeutronResult<Response<NeutronMsg>> {
     let parts: Vec<String> = payload.message.split('_').map(String::from).collect();
     if parts.len() != 5 {
         return Err(ContractError::UnsupportedMessage(payload.message).into());

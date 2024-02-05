@@ -22,7 +22,6 @@ use crate::{
 
 pub fn execute_era_restake(
     mut deps: DepsMut<NeutronQuery>,
-    _: Env,
     pool_addr: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;

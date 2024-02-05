@@ -10,7 +10,7 @@ use crate::{
     state::{SudoPayload, TxType, INFO_OF_ICA_ID},
     tx_callback::msg_with_sudo_callback,
 };
-use cosmwasm_std::{DepsMut, MessageInfo, Response};
+use cosmwasm_std::{DepsMut, Response};
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
     query::min_ibc_fee::query_min_ibc_fee,
@@ -19,7 +19,6 @@ use neutron_sdk::{
 
 pub fn execute_redeem_token_for_share(
     mut deps: DepsMut<NeutronQuery>,
-    _: MessageInfo,
     pool_addr: String,
     tokens: Vec<cosmwasm_std::Coin>,
 ) -> NeutronResult<Response<NeutronMsg>> {

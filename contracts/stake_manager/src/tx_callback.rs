@@ -91,11 +91,7 @@ pub fn sudo_response(
     Err(ContractError::CallBackErrErrorMsg {}.into())
 }
 
-pub fn sudo_error(
-    deps: DepsMut,
-    req: RequestPacket,
-    _: String,
-) -> NeutronResult<Response<NeutronMsg>> {
+pub fn sudo_error(deps: DepsMut, req: RequestPacket) -> NeutronResult<Response<NeutronMsg>> {
     let seq_id = req
         .sequence
         .ok_or_else(|| ContractError::CallBackErrSequenceNotFound {})?;
@@ -159,7 +155,7 @@ fn sudo_failed_callback(
         TxType::UserWithdraw => sudo_withdraw_failed_callback(deps, payload),
         TxType::UpdateValidator => sudo_update_validator_failed_callback(deps, payload),
         TxType::RmValidator => sudo_rm_validator_failed_callback(deps, payload),
-        TxType::StakeLsm => sudo_stake_lsm_failed_callback(deps, payload),
+        TxType::StakeLsm => sudo_stake_lsm_failed_callback(payload),
         TxType::RedeemTokenForShare => sudo_redeem_token_for_share_failed_callback(deps, payload),
     }
 }

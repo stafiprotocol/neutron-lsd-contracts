@@ -1,6 +1,6 @@
 use std::vec;
 
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+use cosmwasm_std::{DepsMut, MessageInfo, Response};
 
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
@@ -15,7 +15,6 @@ use crate::{
 
 pub fn execute_open_channel(
     deps: DepsMut<NeutronQuery>,
-    _: Env,
     info: MessageInfo,
     pool_addr: String,
     closed_channel_id: String,

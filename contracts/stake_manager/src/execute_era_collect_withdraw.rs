@@ -18,7 +18,6 @@ use crate::{error_conversion::ContractError, helper::DEFAULT_TIMEOUT_SECONDS};
 
 pub fn execute_era_collect_withdraw(
     mut deps: DepsMut<NeutronQuery>,
-    _: Env,
     pool_addr: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
