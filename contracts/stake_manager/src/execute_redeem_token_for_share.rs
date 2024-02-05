@@ -25,7 +25,7 @@ pub fn execute_redeem_token_for_share(
     if tokens.len() == 0 || tokens.len() > 10 {
         return Err(ContractError::TokensLenNotMatch {}.into());
     }
-    let mut pool_info = POOLS.load(deps.as_ref().storage, pool_addr.clone())?;
+    let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
     let (pool_ica_info, _, _) = INFO_OF_ICA_ID.load(deps.storage, pool_info.ica_id.clone())?;
 
     let mut denom_set: HashSet<String> = HashSet::new();
@@ -80,7 +80,7 @@ pub fn sudo_redeem_token_for_share_callback(
     deps: DepsMut,
     payload: SudoPayload,
 ) -> NeutronResult<Response<NeutronMsg>> {
-    let mut pool_info = POOLS.load(deps.as_ref().storage, payload.pool_addr.clone())?;
+    let mut pool_info = POOLS.load(deps.storage, payload.pool_addr.clone())?;
 
     let will_removed_denoms: Vec<String> = payload.message.split(",").map(String::from).collect();
 
@@ -101,7 +101,7 @@ pub fn sudo_redeem_token_for_share_failed_callback(
     deps: DepsMut,
     payload: SudoPayload,
 ) -> NeutronResult<Response<NeutronMsg>> {
-    let mut pool_info = POOLS.load(deps.as_ref().storage, payload.pool_addr.clone())?;
+    let mut pool_info = POOLS.load(deps.storage, payload.pool_addr.clone())?;
 
     let will_removed_denoms: Vec<String> = payload.message.split(",").map(String::from).collect();
 

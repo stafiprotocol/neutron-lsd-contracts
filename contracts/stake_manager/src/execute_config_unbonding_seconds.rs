@@ -1,4 +1,3 @@
-use crate::error_conversion::ContractError;
 use crate::state::{STACK, UNBONDING_SECONDS};
 use cosmwasm_std::{DepsMut, MessageInfo, Response};
 use neutron_sdk::{
@@ -13,9 +12,7 @@ pub fn execute_config_unbonding_seconds(
     unbonding_seconds: Option<u64>,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let stack = STACK.load(deps.storage)?;
-    if stack.admin != info.sender {
-        return Err(ContractError::Unauthorized {}.into());
-    }
+    stack.authorize(&info.sender)?;
 
     if let Some(unbonding_seconds) = unbonding_seconds {
         UNBONDING_SECONDS.save(deps.storage, remote_denom, &unbonding_seconds)?;

@@ -24,11 +24,9 @@ pub fn execute_pool_update_validator(
     new_validator: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info: crate::state::PoolInfo =
-        POOLS.load(deps.as_ref().storage, pool_addr.clone())?;
+        POOLS.load(deps.storage, pool_addr.clone())?;
+    pool_info.authorize(&info.sender)?;
 
-    if info.sender != pool_info.admin {
-        return Err(ContractError::Unauthorized {}.into());
-    }
     if pool_info.status != EraStatus::ActiveEnded {
         return Err(ContractError::EraProcessNotEnd {}.into());
     }

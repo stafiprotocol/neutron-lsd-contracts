@@ -18,9 +18,7 @@ pub fn update_icq_update_period(
     }
 
     let pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
-    if pool_info.admin != info.sender {
-        return Err(ContractError::Unauthorized {}.into());
-    }
+    pool_info.authorize(&info.sender)?;
 
     // check era state
     if pool_info.status != ActiveEnded

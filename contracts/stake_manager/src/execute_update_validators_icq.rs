@@ -16,12 +16,8 @@ pub fn execute_update_validators_icq(
     info: MessageInfo,
     pool_addr: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
-    let mut pool_info: crate::state::PoolInfo =
-        POOLS.load(deps.as_ref().storage, pool_addr.clone())?;
-
-    if info.sender != pool_info.admin {
-        return Err(ContractError::Unauthorized {}.into());
-    }
+    let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
+    pool_info.authorize(&info.sender)?;
 
     if pool_info.validator_update_status != ValidatorUpdateStatus::WaitQueryUpdate {
         return Err(ContractError::StatusNotAllow {}.into());

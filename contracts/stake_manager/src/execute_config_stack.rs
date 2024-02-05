@@ -6,7 +6,7 @@ use neutron_sdk::{
 };
 
 use crate::state::STACK;
-use crate::{error_conversion::ContractError, msg::ConfigStackParams};
+use crate::msg::ConfigStackParams;
 
 pub fn execute_config_stack(
     deps: DepsMut<NeutronQuery>,
@@ -14,9 +14,8 @@ pub fn execute_config_stack(
     param: ConfigStackParams,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut stack = STACK.load(deps.storage)?;
-    if stack.admin != info.sender {
-        return Err(ContractError::Unauthorized {}.into());
-    }
+    stack.authorize(&info.sender)?;
+
     if let Some(stack_fee_receiver) = param.stack_fee_receiver {
         stack.stack_fee_receiver = stack_fee_receiver
     }

@@ -51,7 +51,6 @@ pub fn execute_withdraw(
             return Err(ContractError::UnstakeIndexNotWithdrawable(unstake_index).into());
         }
 
-        // Remove the unstake index element of info.sender from UNSTAKES_INDEX_FOR_USER
         total_withdraw_amount += unstake_info.amount;
 
         unstake_info.status = WithdrawStatus::Pending;
@@ -156,6 +155,7 @@ pub fn sudo_withdraw_callback(
                 true
             });
 
+            // Remove the unstake index element
             UNSTAKES_INDEX_FOR_USER.save(
                 deps.storage,
                 (user_addr.clone(), payload.pool_addr.clone()),

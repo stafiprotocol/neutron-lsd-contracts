@@ -143,7 +143,7 @@ pub fn execute_era_stake(
                 msgs.push(any_msg);
             }
         }
-    } else if pool_info.era_snapshot.unbond < pool_info.era_snapshot.bond {
+    } else {
         let stake_amount = pool_info.era_snapshot.bond - pool_info.era_snapshot.unbond;
         let validator_count = pool_info.validator_addrs.len() as u128;
         if validator_count == 0 {

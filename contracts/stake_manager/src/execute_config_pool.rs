@@ -16,11 +16,8 @@ pub fn execute_config_pool(
     env: Env,
     param: ConfigPoolParams,
 ) -> NeutronResult<Response<NeutronMsg>> {
-    let mut pool_info = POOLS.load(deps.as_ref().storage, param.pool_addr.clone())?;
-
-    if info.sender != pool_info.admin {
-        return Err(ContractError::Unauthorized {}.into());
-    }
+    let mut pool_info = POOLS.load(deps.storage, param.pool_addr.clone())?;
+    pool_info.authorize(&info.sender)?;
 
     if let Some(minimal_stake) = param.minimal_stake {
         pool_info.minimal_stake = minimal_stake;

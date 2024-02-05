@@ -33,14 +33,12 @@ pub fn execute_init_pool(
         return Err(ContractError::ValidatorAddressesListSize {}.into());
     }
 
-    let mut pool_info = POOLS.load(deps.as_ref().storage, pool_ica_info.ica_addr.clone())?;
-    if info.sender != pool_info.admin {
-        return Err(ContractError::Unauthorized {}.into());
-    }
-
     if info.funds.len() != 1 || info.funds[0].denom != helper::FEE_DENOM {
         return Err(ContractError::ParamsErrorFundsNotMatch {}.into());
     }
+
+    let mut pool_info = POOLS.load(deps.storage, pool_ica_info.ica_addr.clone())?;
+    pool_info.authorize(&info.sender)?;
 
     let ibc_fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
     let total_ibc_fee = helper::total_ibc_fee(ibc_fee.clone());
