@@ -5,8 +5,8 @@ config_unbonding_seconds() {
 
   msg=$(printf '{
   "config_unbonding_seconds": {
-    "denom": "uatom",
-    "unbonding_seconds": 86400
+    "remote_denom": "uatom",
+    "unbonding_seconds": 20
   }
 }')
   # echo "config pool msg is: $msg"
@@ -20,7 +20,7 @@ config_unbonding_seconds() {
     echo "Failed to config unbonding seconds: $(echo "$tx_result" | jq '.raw_log')" && exit 1
   fi
 
-  query="$(printf '{"unbonding_seconds": {"denom": "uatom"}}')"
+  query="$(printf '{"unbonding_seconds": {"remote_denom": "uatom"}}')"
   echo "------------------------ unbonding seconds info after config ------------------------"
   neutrond query wasm contract-state smart "$contract_address" "$query" --node "$NEUTRON_NODE" --output json | jq
 }
