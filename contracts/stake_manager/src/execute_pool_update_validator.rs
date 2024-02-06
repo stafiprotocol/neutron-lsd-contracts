@@ -1,7 +1,7 @@
+use crate::error_conversion::ContractError;
 use crate::helper::min_ntrn_ibc_fee;
 use crate::state::INFO_OF_ICA_ID;
 use crate::state::{ValidatorUpdateStatus, POOLS};
-use crate::{error_conversion::ContractError, state::EraStatus};
 use crate::{
     helper::gen_redelegate_txs,
     state::{SudoPayload, TxType},
@@ -25,14 +25,9 @@ pub fn execute_pool_update_validator(
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info: crate::state::PoolInfo = POOLS.load(deps.storage, pool_addr.clone())?;
     pool_info.authorize(&info.sender)?;
+    pool_info.require_era_ended()?;
+    pool_info.require_update_validator_ended()?;
 
-    if pool_info.status != EraStatus::ActiveEnded {
-        return Err(ContractError::EraProcessNotEnd {}.into());
-    }
-
-    if pool_info.validator_update_status != ValidatorUpdateStatus::End {
-        return Err(ContractError::StatusNotAllow {}.into());
-    }
     if !pool_info.validator_addrs.contains(&old_validator) {
         return Err(ContractError::OldValidatorNotExist {}.into());
     }

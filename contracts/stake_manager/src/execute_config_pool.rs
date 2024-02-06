@@ -18,6 +18,8 @@ pub fn execute_config_pool(
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info = POOLS.load(deps.storage, param.pool_addr.clone())?;
     pool_info.authorize(&info.sender)?;
+    pool_info.require_era_ended()?;
+    pool_info.require_update_validator_ended()?;
 
     if let Some(minimal_stake) = param.minimal_stake {
         pool_info.minimal_stake = minimal_stake;

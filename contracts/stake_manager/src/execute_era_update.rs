@@ -12,10 +12,7 @@ use crate::state::EraSnapshot;
 use crate::state::{INFO_OF_ICA_ID, POOLS};
 use crate::{
     error_conversion::ContractError,
-    state::{
-        EraStatus::{ActiveEnded, EraUpdateEnded, EraUpdateStarted},
-        ValidatorUpdateStatus,
-    },
+    state::EraStatus::{ActiveEnded, EraUpdateEnded, EraUpdateStarted},
 };
 use crate::{
     helper::min_ntrn_ibc_fee,
@@ -32,12 +29,8 @@ pub fn execute_era_update(
     if pool_info.paused {
         return Err(ContractError::PoolIsPaused {}.into());
     }
-    // check era state
-    if pool_info.status != ActiveEnded
-        || pool_info.validator_update_status != ValidatorUpdateStatus::End
-    {
-        return Err(ContractError::StatusNotAllow {}.into());
-    }
+    pool_info.require_era_ended()?;
+    pool_info.require_update_validator_ended()?;
 
     if pool_info.active.is_zero() && pool_info.bond.is_zero() && pool_info.unbond.is_zero() {
         return Err(ContractError::StatusNotAllow {}.into());

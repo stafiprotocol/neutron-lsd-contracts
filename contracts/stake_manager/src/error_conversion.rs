@@ -98,9 +98,6 @@ pub enum ContractError {
     #[error("LSM pending stake over limit")]
     LsmPendingStakeOverLimit {},
 
-    #[error("Pool ICQ not updated")]
-    PoolIcqNotUpdated {},
-
     #[error("Params error: funds not match")]
     ParamsErrorFundsNotMatch {},
 
