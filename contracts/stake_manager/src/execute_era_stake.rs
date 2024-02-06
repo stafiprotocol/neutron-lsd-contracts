@@ -84,7 +84,7 @@ pub fn execute_era_stake(
                 op_validators.push(info.validator.clone());
 
                 // add submessage to unstake
-                let delegate_msg = MsgUndelegate {
+                let undelegate_msg = MsgUndelegate {
                     delegator_address: pool_addr.clone(),
                     validator_address: info.validator.clone(),
                     amount: Some(Coin {
@@ -93,9 +93,9 @@ pub fn execute_era_stake(
                     }),
                 };
                 let mut buf = Vec::new();
-                buf.reserve(delegate_msg.encoded_len());
+                buf.reserve(undelegate_msg.encoded_len());
 
-                if let Err(e) = delegate_msg.encode(&mut buf) {
+                if let Err(e) = undelegate_msg.encode(&mut buf) {
                     return Err(ContractError::EncodeError(e.to_string()).into());
                 }
 
@@ -236,23 +236,18 @@ fn allocate_unbond_amount(
             ),
         )? {
             if !timestamps.is_empty() {
-                let oldest_record_time = timestamps[0];
-                if current_time > oldest_record_time + unbonding_period_seconds {
-                    timestamps.remove(0);
-
-                    VALIDATORS_UNBONDS_TIME.save(
-                        deps.storage,
-                        (
-                            delegation.delegator.to_string(),
-                            delegation.validator.clone(),
-                        ),
-                        &timestamps,
-                    )?;
-                }
-
-                if timestamps.len() >= 7 {
-                    continue;
-                }
+                timestamps.retain(|&t| current_time < t + unbonding_period_seconds);
+                VALIDATORS_UNBONDS_TIME.save(
+                    deps.storage,
+                    (
+                        delegation.delegator.to_string(),
+                        delegation.validator.clone(),
+                    ),
+                    &timestamps,
+                )?;
+            }
+            if timestamps.len() >= 7 {
+                continue;
             }
         }
 

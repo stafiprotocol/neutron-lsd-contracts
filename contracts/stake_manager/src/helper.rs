@@ -1,5 +1,6 @@
 use std::ops::Add;
 
+use cosmos_sdk_proto::cosmos::bank::v1beta1::MsgSend;
 use cosmos_sdk_proto::cosmos::base::v1beta1::Coin;
 use cosmos_sdk_proto::cosmos::distribution::v1beta1::MsgSetWithdrawAddress;
 use cosmos_sdk_proto::cosmos::staking::v1beta1::{MsgBeginRedelegate, MsgDelegate};
@@ -561,4 +562,29 @@ pub fn total_icq_register_fee(fee: Vec<cosmwasm_std::Coin>) -> Uint128 {
     } else {
         Uint128::zero()
     }
+}
+
+pub fn gen_msg_send(
+    from_address: String,
+    to_address: String,
+    denom: String,
+    amount: String,
+) -> NeutronResult<ProtobufAny> {
+    // interchain tx send atom
+    let ica_send = MsgSend {
+        from_address,
+        to_address,
+        amount: vec![Coin { denom, amount }],
+    };
+    let mut buf = Vec::new();
+    buf.reserve(ica_send.encoded_len());
+
+    ica_send
+        .encode(&mut buf)
+        .map_err(|e| ContractError::EncodeError(e.to_string()))?;
+
+    Ok(ProtobufAny {
+        type_url: "/cosmos.bank.v1beta1.MsgSend".to_string(),
+        value: Binary::from(buf),
+    })
 }
