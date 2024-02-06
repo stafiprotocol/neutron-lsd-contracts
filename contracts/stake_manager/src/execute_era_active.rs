@@ -31,27 +31,18 @@ pub fn execute_era_active(
         return Err(ContractError::PendingShareNotEmpty {}.into());
     }
 
-    let delegations_result = query_delegation_by_addr(deps.as_ref(), pool_addr.clone());
+    let delegations_resp = query_delegation_by_addr(deps.as_ref(), pool_addr.clone())
+        .map_err(|_| ContractError::DelegationsNotExist {})?;
+    if delegations_resp.last_submitted_local_height <= pool_info.era_snapshot.last_step_height {
+        return Err(ContractError::DelegationSubmissionHeight {}.into());
+    }
 
     let mut total_amount = cosmwasm_std::Coin {
         denom: pool_info.remote_denom.clone(),
         amount: Uint128::zero(),
     };
-
-    match delegations_result {
-        Ok(delegations_resp) => {
-            if delegations_resp.last_submitted_local_height
-                <= pool_info.era_snapshot.last_step_height
-            {
-                return Err(ContractError::DelegationSubmissionHeight {}.into());
-            }
-            for delegation in delegations_resp.delegations {
-                total_amount.amount = total_amount.amount.add(delegation.amount.amount);
-            }
-        }
-        Err(_) => {
-            return Err(ContractError::DelegationsNotExist {}.into());
-        }
+    for delegation in delegations_resp.delegations {
+        total_amount.amount = total_amount.amount.add(delegation.amount.amount);
     }
 
     let mut stack_info = STACK.load(deps.storage)?;
