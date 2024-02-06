@@ -2,6 +2,7 @@ use crate::error_conversion::ContractError;
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{from_json, to_json_vec, Addr, Binary, StdResult, Storage, Uint128};
 use cw_storage_plus::{Item, Map};
+use neutron_sdk::NeutronResult;
 
 use crate::helper::{
     QUERY_REPLY_ID_RANGE_END, QUERY_REPLY_ID_RANGE_START, REPLY_ID_RANGE_END, REPLY_ID_RANGE_START,
@@ -18,7 +19,7 @@ pub struct Stack {
 }
 
 impl Stack {
-    pub fn authorize(&self, addr: &Addr) -> neutron_sdk::NeutronResult<()> {
+    pub fn authorize(&self, addr: &Addr) -> NeutronResult<()> {
         if addr == self.admin {
             return Ok(());
         }
@@ -75,11 +76,24 @@ pub struct PoolInfo {
 }
 
 impl PoolInfo {
-    pub fn authorize(&self, addr: &Addr) -> neutron_sdk::NeutronResult<()> {
+    pub fn authorize(&self, addr: &Addr) -> NeutronResult<()> {
         if addr == self.admin {
             return Ok(());
         }
         Err(ContractError::Unauthorized {}.into())
+    }
+
+    pub fn require_era_ended(&self) -> NeutronResult<()> {
+        if self.status != EraStatus::ActiveEnded {
+            return Err(ContractError::EraProcessNotEnd {}.into());
+        }
+        Ok(())
+    }
+    pub fn require_update_validator_ended(&self) -> NeutronResult<()> {
+        if self.validator_update_status != ValidatorUpdateStatus::End {
+            return Err(ContractError::StatusNotAllow {}.into());
+        }
+        Ok(())
     }
 }
 
