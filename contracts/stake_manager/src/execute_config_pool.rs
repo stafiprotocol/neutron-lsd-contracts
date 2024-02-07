@@ -50,7 +50,7 @@ pub fn execute_config_pool(
         pool_info.era_seconds = era_seconds;
 
         pool_info.offset =
-            (env.block.time.seconds().div(pool_info.era_seconds) as i64).sub(current_era as i64);
+            (current_era as i64).sub(env.block.time.seconds().div(pool_info.era_seconds) as i64);
 
         let unbonding_seconds =
             UNBONDING_SECONDS.load(deps.storage, pool_info.remote_denom.clone())?;
