@@ -75,6 +75,52 @@ pub struct PoolInfo {
     pub rate_change_limit: Uint128,
 }
 
+impl Default for PoolInfo {
+    fn default() -> Self {
+        Self {
+            bond: Uint128::zero(),
+            unbond: Uint128::zero(),
+            active: Uint128::zero(),
+            lsd_token: Addr::unchecked(""),
+            ica_id: "".to_string(),
+            ibc_denom: "".to_string(),
+            channel_id_of_ibc_denom: "".to_string(),
+            remote_denom: "".to_string(),
+            validator_addrs: vec![],
+            era: 0,
+            rate: Uint128::zero(),
+            minimal_stake: Uint128::zero(),
+            unstake_times_limit: 0,
+            next_unstake_index: 0,
+            unbonding_period: 0,
+            status: EraStatus::RegisterEnded,
+            validator_update_status: ValidatorUpdateStatus::End,
+            platform_fee_commission: Uint128::zero(),
+            total_platform_fee: Uint128::zero(),
+            total_lsd_token_amount: Uint128::zero(),
+            unbond_commission: Uint128::zero(),
+            platform_fee_receiver: Addr::unchecked(""),
+            admin: Addr::unchecked(""),
+            era_seconds: 0,
+            offset: 0,
+            share_tokens: vec![],
+            redeemming_share_token_denom: vec![],
+            era_snapshot: EraSnapshot {
+                era: 0,
+                bond: Uint128::zero(),
+                unbond: Uint128::zero(),
+                active: Uint128::zero(),
+                restake_amount: Uint128::zero(),
+                last_step_height: 0,
+            },
+            paused: false,
+            lsm_support: false,
+            lsm_pending_limit: 0,
+            rate_change_limit: Uint128::zero(),
+        }
+    }
+}
+
 impl PoolInfo {
     pub fn authorize(&self, addr: &Addr) -> NeutronResult<()> {
         if addr == self.admin {
@@ -89,6 +135,7 @@ impl PoolInfo {
         }
         Ok(())
     }
+
     pub fn require_update_validator_ended(&self) -> NeutronResult<()> {
         if self.validator_update_status != ValidatorUpdateStatus::End {
             return Err(ContractError::StatusNotAllow {}.into());
@@ -285,3 +332,45 @@ pub const ERA_RATE: Map<(String, u64), Uint128> = Map::new("era_rate");
 
 // denom -> unbonding_seconds
 pub const UNBONDING_SECONDS: Map<String, u64> = Map::new("unbonding_seconds");
+
+#[cfg(test)]
+mod tests {
+    use super::PoolInfo;
+    use core::ops::{Div, Sub};
+
+    #[test]
+    fn test_update_era_logic() {
+        // init
+        let mut pool = PoolInfo::default();
+        pool.era_seconds = 24 * 3600;
+        let current_timestamp = 1707188243 as u64; // 2024-02-06 02:57:23 UTC
+        pool.offset = 0 - current_timestamp.div(pool.era_seconds) as i64;
+
+        // time flies
+        let current_timestamp = 1707274643 as u64; // 2024-02-07 02:57:23 UTC
+        let era = current_timestamp
+            .div(pool.era_seconds)
+            .saturating_add_signed(pool.offset);
+        assert_eq!(1, era);
+
+        {
+            // change era seconds to 8h
+            let current_timestamp = 1707274643 as u64; // 2024-02-07 02:57:23 UTC
+            let old_current_era = current_timestamp
+                .div(pool.era_seconds)
+                .saturating_add_signed(pool.offset);
+            pool.era_seconds = 8 * 3600;
+            pool.offset = (old_current_era as i64).sub(current_timestamp.div(pool.era_seconds) as i64);
+            let era = current_timestamp
+                .div(pool.era_seconds)
+                .saturating_add_signed(pool.offset);
+            assert_eq!(1, era);
+
+            let current_timestamp = 1707274643 as u64 + 8 * 3600; // 2024-02-07 10:57:23 UTC
+            let era = current_timestamp
+                .div(pool.era_seconds)
+                .saturating_add_signed(pool.offset);
+            assert_eq!(2, era);
+        }
+    }
+}

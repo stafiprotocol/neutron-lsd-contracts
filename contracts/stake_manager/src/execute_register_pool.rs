@@ -1,6 +1,6 @@
 use std::ops::Div;
 
-use cosmwasm_std::{Addr, Coin, DepsMut, Env, MessageInfo, Response, Uint128};
+use cosmwasm_std::{Coin, DepsMut, Env, MessageInfo, Response};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -10,14 +10,11 @@ use neutron_sdk::{
     NeutronResult,
 };
 
+use crate::error_conversion::ContractError;
 use crate::helper;
 use crate::{
-    error_conversion::ContractError,
-    state::{EraSnapshot, ValidatorUpdateStatus},
-};
-use crate::{
     helper::{get_withdraw_ica_id, ICA_WITHDRAW_SUFIX, INTERCHAIN_ACCOUNT_ID_LEN_LIMIT},
-    state::{EraStatus, IcaInfo, PoolInfo, INFO_OF_ICA_ID, POOLS},
+    state::{IcaInfo, PoolInfo, INFO_OF_ICA_ID, POOLS},
 };
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -157,47 +154,9 @@ pub fn sudo_open_ack(
         && !withdraw_ica_info.ica_addr.is_empty()
         && !POOLS.has(deps.storage, pool_ica_info.ica_addr.clone())
     {
-        let pool_info = PoolInfo {
-            bond: Uint128::zero(),
-            unbond: Uint128::zero(),
-            active: Uint128::zero(),
-            lsd_token: Addr::unchecked(""),
-            ica_id: ica_id.clone(),
-            ibc_denom: "".to_string(),
-            channel_id_of_ibc_denom: "".to_string(),
-            remote_denom: "".to_string(),
-            validator_addrs: vec![],
-            era: 0,
-            rate: Uint128::zero(),
-            minimal_stake: Uint128::zero(),
-            unstake_times_limit: 0,
-            next_unstake_index: 0,
-            unbonding_period: 0,
-            status: EraStatus::RegisterEnded,
-            validator_update_status: ValidatorUpdateStatus::End,
-            platform_fee_commission: Uint128::zero(),
-            total_platform_fee: Uint128::zero(),
-            total_lsd_token_amount: Uint128::zero(),
-            unbond_commission: Uint128::zero(),
-            platform_fee_receiver: Addr::unchecked(""),
-            admin: admin.clone(),
-            era_seconds: 0,
-            offset: 0,
-            share_tokens: vec![],
-            redeemming_share_token_denom: vec![],
-            era_snapshot: EraSnapshot {
-                era: 0,
-                bond: Uint128::zero(),
-                unbond: Uint128::zero(),
-                active: Uint128::zero(),
-                restake_amount: Uint128::zero(),
-                last_step_height: 0,
-            },
-            paused: false,
-            lsm_support: false,
-            lsm_pending_limit: 0,
-            rate_change_limit: Uint128::zero(),
-        };
+        let mut pool_info = PoolInfo::default();
+        pool_info.ica_id = ica_id.clone();
+        pool_info.admin = admin.clone();
 
         POOLS.save(deps.storage, pool_ica_info.ica_addr.clone(), &pool_info)?;
     }
