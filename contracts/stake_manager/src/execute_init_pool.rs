@@ -1,6 +1,6 @@
 use crate::helper::{
     self, deal_pool, min_ntrn_ibc_fee, query_icq_register_fee, set_withdraw_sub_msg,
-    total_icq_register_fee, CAL_BASE, DEFAULT_ERA_SECONDS_DEBUG, DEFAULT_ERA_SECONDS_RELEASE,
+    total_icq_register_fee, CAL_BASE, DEFAULT_ERA_SECONDS,
 };
 use crate::msg::InitPoolParams;
 use crate::state::POOLS;
@@ -103,9 +103,9 @@ pub fn execute_init_pool(
     pool_info.validator_update_status = ValidatorUpdateStatus::End;
 
     if env!("PROFILE") == "debug" {
-        pool_info.era_seconds = DEFAULT_ERA_SECONDS_DEBUG;
+        pool_info.era_seconds = 20; // for testing purpose
     } else {
-        pool_info.era_seconds = DEFAULT_ERA_SECONDS_RELEASE;
+        pool_info.era_seconds = DEFAULT_ERA_SECONDS;
     }
 
     // cal
