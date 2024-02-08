@@ -1,6 +1,6 @@
 use crate::helper::{
     self, deal_pool, min_ntrn_ibc_fee, query_icq_register_fee, set_withdraw_sub_msg,
-    total_icq_register_fee, CAL_BASE, DEFAULT_ERA_SECONDS,
+    total_icq_register_fee, CAL_BASE, DEFAULT_ERA_SECONDS_DEBUG, DEFAULT_ERA_SECONDS_RELEASE,
 };
 use crate::msg::InitPoolParams;
 use crate::state::POOLS;
@@ -15,7 +15,7 @@ use neutron_sdk::{
     NeutronResult,
 };
 use std::ops::{Add, Div, Mul};
-use std::vec;
+use std::{env, vec};
 
 // add execute to config the validator addrs and withdraw address on reply
 pub fn execute_init_pool(
@@ -90,7 +90,6 @@ pub fn execute_init_pool(
     pool_info.unbond = Uint128::zero();
     pool_info.active = Uint128::zero();
     pool_info.rate = CAL_BASE;
-    pool_info.era_seconds = DEFAULT_ERA_SECONDS;
     pool_info.share_tokens = vec![];
     pool_info.total_platform_fee = Uint128::zero();
     pool_info.total_lsd_token_amount = Uint128::zero();
@@ -102,6 +101,12 @@ pub fn execute_init_pool(
     pool_info.lsm_pending_limit = 100;
     pool_info.rate_change_limit = Uint128::zero();
     pool_info.validator_update_status = ValidatorUpdateStatus::End;
+
+    if env!("PROFILE") == "debug" {
+        pool_info.era_seconds = DEFAULT_ERA_SECONDS_DEBUG;
+    } else {
+        pool_info.era_seconds = DEFAULT_ERA_SECONDS_RELEASE;
+    }
 
     // cal
     let offset = env.block.time.seconds().div(pool_info.era_seconds);

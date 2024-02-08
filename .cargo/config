@@ -4,3 +4,6 @@ wasm-debug = "build --lib --target wasm32-unknown-unknown"
 unit-test = "test --lib"
 integration-test = "test --test integration"
 schema = "run --bin schema"
+
+[env]
+PROFILE = "release"

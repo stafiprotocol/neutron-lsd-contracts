@@ -360,7 +360,8 @@ mod tests {
                 .div(pool.era_seconds)
                 .saturating_add_signed(pool.offset);
             pool.era_seconds = 8 * 3600;
-            pool.offset = (old_current_era as i64).sub(current_timestamp.div(pool.era_seconds) as i64);
+            pool.offset =
+                (old_current_era as i64).sub(current_timestamp.div(pool.era_seconds) as i64);
             let era = current_timestamp
                 .div(pool.era_seconds)
                 .saturating_add_signed(pool.offset);

@@ -18,6 +18,6 @@ make compile
 ## Integration test
 
 ```sh
-git checkout integration_test
+make compile_debug
 ./scripts/test.sh
 ```

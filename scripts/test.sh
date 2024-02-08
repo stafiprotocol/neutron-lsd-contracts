@@ -16,12 +16,16 @@
 set -euo pipefail
 IFS=$'\n\t'
 ARCH=$(uname -m)
-CONTRACT_PATH="artifacts/stake_manager.wasm"
-RTOKEN_CONTRACT_PATH="artifacts/lsd_token.wasm"
+ARTIFACTS="debug_artifacts"
+# ARTIFACTS="artifacts"
+CONTRACT_PATH="$ARTIFACTS/stake_manager.wasm"
+RTOKEN_CONTRACT_PATH="$ARTIFACTS/lsd_token.wasm"
 if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-    CONTRACT_PATH="artifacts/stake_manager-aarch64.wasm"
-    RTOKEN_CONTRACT_PATH="artifacts/lsd_token-aarch64.wasm"
+    CONTRACT_PATH="$ARTIFACTS/stake_manager-aarch64.wasm"
+    RTOKEN_CONTRACT_PATH="$ARTIFACTS/lsd_token-aarch64.wasm"
 fi
+echo "rtoken contract path: $RTOKEN_CONTRACT_PATH"
+echo "contract manager contract path: $CONTRACT_PATH"
 
 CHAIN_ID_1="test-1"
 CHAIN_ID_2="test-2"

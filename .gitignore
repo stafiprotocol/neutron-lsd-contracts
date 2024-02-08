@@ -1,6 +1,7 @@
 # Build results
 target/
 artifacts/
+debug_artifacts/
 
 /deployment_scripts/node_modules
 
