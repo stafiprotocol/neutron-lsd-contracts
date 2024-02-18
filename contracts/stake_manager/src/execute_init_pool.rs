@@ -113,9 +113,9 @@ pub fn execute_init_pool(
     pool_info.offset = 0 - (offset as i64);
 
     let unbonding_seconds = UNBONDING_SECONDS.load(deps.storage, pool_info.remote_denom.clone())?;
-    pool_info.unbonding_period = ((unbonding_seconds as f64)
+    pool_info.unbonding_period = (unbonding_seconds as f64)
         .div(pool_info.era_seconds as f64)
-        .ceil() as u64)
+        .ceil() as u64
         + 1;
 
     let code_id = match param.lsd_code_id {

@@ -46,7 +46,7 @@ pub fn execute_unstake(
         will_burn_lsd_token_amount = lsd_token_amount.sub(cms_fee);
 
         if cms_fee.u128() > 0 {
-            let mint_msg = WasmMsg::Execute {
+            let transfer_cms_fee_msg = WasmMsg::Execute {
                 contract_addr: pool_info.lsd_token.to_string(),
                 msg: to_json_binary(
                     &(Cw20ExecuteMsg::TransferFrom {
@@ -58,7 +58,7 @@ pub fn execute_unstake(
                 funds: vec![],
             };
 
-            rsp = rsp.add_message(mint_msg);
+            rsp = rsp.add_message(transfer_cms_fee_msg);
         }
     }
     if will_burn_lsd_token_amount.is_zero() {
@@ -70,8 +70,8 @@ pub fn execute_unstake(
 
     // update pool info
     pool_info.next_unstake_index += 1;
-    pool_info.unbond = pool_info.unbond.add(token_amount);
-    pool_info.active = pool_info.active.sub(token_amount);
+    pool_info.unbond += token_amount;
+    pool_info.active -= token_amount;
 
     // burn
     let burn_msg = WasmMsg::Execute {

@@ -198,6 +198,19 @@ pub struct IcaInfo {
     pub ica_addr: String,
 }
 
+impl Default for IcaInfo {
+    fn default() -> Self {
+        Self {
+            ctrl_connection_id: "".to_string(),
+            host_connection_id: "".to_string(),
+            ctrl_channel_id: "".to_string(),
+            host_channel_id: "".to_string(),
+            ctrl_port_id: "".to_string(),
+            ica_addr: "".to_string(),
+        }
+    }
+}
+
 //  key: ica id value: (pool IcaInfo, withdraw icaInfo, admin)
 pub const INFO_OF_ICA_ID: Map<String, (IcaInfo, IcaInfo, Addr)> = Map::new("info_of_ica_id");
 
