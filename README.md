@@ -12,23 +12,27 @@ neutron lsd contracts by StaFi Protocol.
 Stake-manager contract holds all LSD functionalities, it consists with many pools, each pool represents a individual project party associated with an admin account who is privileged to config pool's parameters.
 
 ### Project party
-1. register pool: create pool ICA and withdraw ICA, and bind interchain routes e.g. channel, port
-1. init pool: pool should be initiated with validator set, fee reciver, commission rate and lsd token info
-1. config pool: update pool configs such as lsm_support, era_seconds, commission fee, fee reciver etc.
+- `register_pool`: Create pool ICA and withdraw ICA, and bind interchain routes e.g. channel, port
+- `init_pool`: Pool should be initiated with validator set, fee reciver, commission rate and lsd token info
+- `config_pool`: Update pool configs such as lsm_support, era_seconds, commission fee, fee reciver etc.
+- `add_pool_validators`: Adds validators to the pool
+- `rm_pool_validator`: Removes validator from the pool.
+- `pool_update_validator`: Updates validator information for the pool.
 
 ### User
-- stake: attached with wasm invocation, users can stake token and get LSD token via source chain ibc transfer function 
-- stake lsm: users can stake their LSM to get LSD token avoiding 21 days unboding period
-- stake on neutron: users can stake directly in neutron chain to get LSD token
-- unstake: anyone who owns LSD token can call this function, LSD token will be burnt and users have to wait unboding period of time to withdraw their assets
-- withdraw: when unstake is mature, users can withdraw
+- `stake`:
+  - Attached with wasm invocation, users can stake token and get LSD token from source chain by ibc transfer function 
+  - Users can call smart contract directly in neutron chain to stake
+- `stake_lsm`: Users can stake their LSM to get LSD token avoiding 21 days unboding period
+- `unstake`: Anyone who owns LSD token can call this function, LSD token will be burnt and users have to wait unboding period of time to withdraw their assets
+- `withdraw`: When unstake become mature, users can withdraw
 
 ### Stack
 
 StaFi Team or DAO can config stack parameters:
 - default LSD token code id
 - administrator address of stack
-- entrusted pools: it is a great feature for project party who can rapidly run a LSD token without running its own relay service, StaFi Team will run it instead. It is fully secure as all functions a relay needs to execute are permissionless.
+- entrusted pools: It is a great feature for project party who can rapidly run a LSD token without running its own relay service, StaFi Team will run it instead. It is fully secure as all functions a relay needs to execute are permissionless.
 
 ### Token Redemption 
 
@@ -45,13 +49,6 @@ StaFi Team or DAO can config stack parameters:
     - `era_restake`: Restake rewards generated in the previous era.
     - `era_active`: Handles the data changes caused by new stakes or unstakes in the new era process, calculates the new era's rate, and initiates the new era.
 - **ICQ Query Frequency Adjustment**: During the new era process, the contract will flexibly update the frequency of ICQ queries as needed to reduce the cost for ICQ relayers.
-
-### Pool Validator Management
-
-- **Functionality**: Pool managers can update the validators bound to a pool using the following methods:
-    - `add_pool_validators`: Adds validators to the pool.
-    - `rm_pool_validator`: Removes validators from the pool.
-    - `pool_update_validator`: Updates validator information for the pool.
 - When a Redelegate action occurs, `pool_update_validators_icq` must be executed to synchronize the contract content's ICQ with the latest validator-related queries.
 
 
