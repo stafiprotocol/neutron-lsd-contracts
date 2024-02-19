@@ -148,7 +148,7 @@ pub fn sudo_open_ack(
         && !withdraw_ica_info.ica_addr.is_empty()
         && !POOLS.has(deps.storage, pool_ica_info.ica_addr.clone())
     {
-        let pool_info = PoolInfo{
+        let pool_info = PoolInfo {
             ica_id: ica_id.clone(),
             admin: admin.clone(),
             ..Default::default()

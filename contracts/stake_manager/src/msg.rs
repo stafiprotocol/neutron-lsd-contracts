@@ -83,7 +83,6 @@ pub struct ConfigStackParams {
     pub stack_fee_receiver: Option<Addr>,
     pub new_admin: Option<Addr>,
     pub stack_fee_commission: Option<Uint128>,
-    pub total_stack_fee: Option<Uint128>,
     pub lsd_token_code_id: Option<u64>,
     pub add_entrusted_pool: Option<String>,
     pub remove_entrusted_pool: Option<String>,
