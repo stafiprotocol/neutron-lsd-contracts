@@ -43,7 +43,7 @@ StaFi Team or DAO can config stack parameters:
 - **Characteristics**: The new era process is permissionless, showcasing the decentralized nature of the Cosmos LSD Stack, allowing anyone to trigger the beginning of a new era. Each step in the process includes sufficient condition checks to prevent the contract from re-processing transactions or prematurely moving to subsequent steps.
 - **Conditions**: The new era process can be triggered when a pool meets the conditions for starting a new era (i.e., reaching the time to start the next era).
 - **Processes and Functions**:
-    - `era_update`: Transfers an era's stored tokens on the original chain to an account on the neutron chain through ICA and interchain transactions.
+    - `era_update`: Transfers an era's stored tokens on the neutron chain to an account on the original chain through ICA and interchain transactions.
     - `era_stake`: Handles staking, unstaking, and withdrawal transactions on the original chain.
     - `era_withdraw_collect`: Collects rewards from the previous era into the pool ICA account in preparation for restake.
     - `era_restake`: Restake rewards generated in the previous era.
