@@ -663,16 +663,6 @@
               "type": "null"
             }
           ]
-        },
-        "total_stack_fee": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/Uint128"
-            },
-            {
-              "type": "null"
-            }
-          ]
         }
       },
       "additionalProperties": false
