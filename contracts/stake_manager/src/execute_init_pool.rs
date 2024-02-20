@@ -1,6 +1,6 @@
 use crate::helper::{
     self, deal_pool, min_ntrn_ibc_fee, query_icq_register_fee, set_withdraw_sub_msg,
-    total_icq_register_fee, CAL_BASE, DEFAULT_ERA_SECONDS,
+    total_icq_register_fee, DEFAULT_ERA_SECONDS, DEFAULT_RATE,
 };
 use crate::msg::InitPoolParams;
 use crate::state::POOLS;
@@ -89,7 +89,7 @@ pub fn execute_init_pool(
     pool_info.bond = Uint128::zero();
     pool_info.unbond = Uint128::zero();
     pool_info.active = Uint128::zero();
-    pool_info.rate = CAL_BASE;
+    pool_info.rate = DEFAULT_RATE;
     pool_info.share_tokens = vec![];
     pool_info.total_platform_fee = Uint128::zero();
     pool_info.total_lsd_token_amount = Uint128::zero();
