@@ -71,7 +71,7 @@ pub struct InitPoolParams {
     pub remote_denom: String,
     pub validator_addrs: Vec<String>,
     pub platform_fee_receiver: String,
-    pub lsd_code_id: Option<u64>,
+    pub lsd_token_code_id: Option<u64>,
     pub lsd_token_name: String,
     pub lsd_token_symbol: String,
     pub minimal_stake: Uint128,

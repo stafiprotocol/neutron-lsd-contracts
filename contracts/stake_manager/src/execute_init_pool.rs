@@ -118,7 +118,7 @@ pub fn execute_init_pool(
         .ceil() as u64
         + 1;
 
-    let code_id = match param.lsd_code_id {
+    let code_id = match param.lsd_token_code_id {
         Some(lsd_code_id) => lsd_code_id,
         None => STACK.load(deps.storage)?.lsd_token_code_id,
     };

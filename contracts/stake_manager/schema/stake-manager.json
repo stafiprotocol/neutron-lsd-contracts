@@ -720,7 +720,7 @@
           "interchain_account_id": {
             "type": "string"
           },
-          "lsd_code_id": {
+          "lsd_token_code_id": {
             "type": [
               "integer",
               "null"
