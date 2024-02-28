@@ -36,6 +36,8 @@ pub enum QueryMsg {
     PoolInfo { pool_addr: String },
     #[returns(Stack)]
     StackInfo {},
+    #[returns(Uint128)]
+    TotalStackFee { pool_addr: String },
     #[returns(EraSnapshot)]
     EraSnapshot { pool_addr: String },
     /// this query goes to neutron and get stored ICA with a specific query

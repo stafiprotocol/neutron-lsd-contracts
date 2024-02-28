@@ -8,7 +8,6 @@ use neutron_sdk::{
     NeutronResult,
 };
 
-use crate::helper::{DEFAULT_RATE, DEFAULT_UPDATE_PERIOD};
 use crate::state::{
     EraStatus::{ActiveEnded, EraRestakeEnded},
     STACK,
@@ -16,6 +15,10 @@ use crate::state::{
 use crate::{error_conversion::ContractError, state::POOLS};
 use crate::{helper::get_update_pool_icq_msgs, state::ERA_RATE};
 use crate::{helper::CAL_BASE, query::query_delegation_by_addr};
+use crate::{
+    helper::{DEFAULT_RATE, DEFAULT_UPDATE_PERIOD},
+    state::TOTAL_STACK_FEE,
+};
 
 pub fn execute_era_active(
     deps: DepsMut<NeutronQuery>,
@@ -45,7 +48,8 @@ pub fn execute_era_active(
         total_amount.amount = total_amount.amount.add(delegation.amount.amount);
     }
 
-    let mut stack_info = STACK.load(deps.storage)?;
+    let stack_info = STACK.load(deps.storage)?;
+    let mut total_stack_fee = TOTAL_STACK_FEE.load(deps.storage, pool_addr.clone())?;
     // calculate protocol fee
     let (platform_fee, stack_fee) = if total_amount.amount > pool_info.era_snapshot.active {
         let reward = total_amount.amount.sub(pool_info.era_snapshot.active);
@@ -143,11 +147,11 @@ pub fn execute_era_active(
         };
         resp = resp.add_message(msg);
 
-        stack_info.total_stack_fee = stack_info.total_stack_fee.add(stack_fee);
+        total_stack_fee = total_stack_fee.add(stack_fee);
     }
 
     POOLS.save(deps.storage, pool_addr.clone(), &pool_info)?;
-    STACK.save(deps.storage, &stack_info)?;
+    TOTAL_STACK_FEE.save(deps.storage, pool_addr.clone(), &total_stack_fee)?;
     ERA_RATE.save(
         deps.storage,
         (pool_addr.clone(), pool_info.era),
