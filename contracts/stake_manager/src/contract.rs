@@ -191,10 +191,9 @@ pub fn execute(
             neutron_address,
             pool_addr,
         } => execute_stake_lsm(deps, env, info, neutron_address, pool_addr),
-        ExecuteMsg::UpdateIcqUpdatePeriod {
-            pool_addr,
-            new_update_period,
-        } => update_icq_update_period(deps, info, pool_addr, new_update_period),
+        ExecuteMsg::UpdateIcqUpdatePeriod { pool_addr } => {
+            update_icq_update_period(deps, info, pool_addr)
+        }
     }
 }
 

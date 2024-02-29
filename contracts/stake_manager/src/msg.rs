@@ -177,7 +177,6 @@ pub enum ExecuteMsg {
     },
     UpdateIcqUpdatePeriod {
         pool_addr: String,
-        new_update_period: u64,
     },
 }
 

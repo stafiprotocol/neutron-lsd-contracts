@@ -468,15 +468,9 @@
         "update_icq_update_period": {
           "type": "object",
           "required": [
-            "new_update_period",
             "pool_addr"
           ],
           "properties": {
-            "new_update_period": {
-              "type": "integer",
-              "format": "uint64",
-              "minimum": 0.0
-            },
             "pool_addr": {
               "type": "string"
             }

@@ -44,8 +44,8 @@ pub const VALIDATORS_LEN_LIMIT: usize = 16;
 
 // Default timeout for SubmitTX is 30h
 pub const DEFAULT_TIMEOUT_SECONDS: u64 = 30 * 60 * 60;
-pub const DEFAULT_UPDATE_PERIOD: u64 = 12000;
-pub const DEFAULT_FAST_PERIOD: u64 = 45;
+pub const DEFAULT_UPDATE_PERIOD: u64 = 86400;
+pub const DEFAULT_FAST_PERIOD: u64 = 60;
 
 pub const REPLY_ID_RANGE_START: u64 = 1_000_000_000;
 pub const REPLY_ID_RANGE_SIZE: u64 = 1_000_000;
