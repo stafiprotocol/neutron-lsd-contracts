@@ -44,14 +44,8 @@ pub enum ContractError {
     #[error("Validator addresses list")]
     ValidatorAddressesListSize {},
 
-    #[error("Rate is zero")]
-    RateIsZero {},
-
     #[error("Instantiate2 address failed, err: {0}")]
     Instantiate2AddressFailed(String),
-
-    #[error("Rate not match")]
-    RateNotMatch {},
 
     #[error("Closed channel ID unmatch")]
     ClosedChannelIdUnmatch {},
