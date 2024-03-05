@@ -1,6 +1,6 @@
 # Neutron LSD Contracts
 
-StaFi Cosmos LSD Stack powered by StaFi Protocol is a suite of software which helps developers deploying LSD project instantly. Thanks to Neutron, we are able to implement liquid staking in smart contract. The key component of it is StakeManager contract, which is responsible for handling staking logic, validator set management, reward distribution, and withdrawals. In addition, LSD token is an cw20 compatible contract, users get LST after stake and it will be burnt after unstake. 
+StaFi Cosmos LSD Stack powered by StaFi Protocol is a suite of software which helps developers deploying LSD project instantly. Thanks to Neutron, we are able to implement liquid staking in smart contract. The key component of it is StakeManager contract, which is responsible for handling staking logic, validator set management, reward distribution, and withdrawals. In addition, LSD token is an cw20 compatible contract, users get LST after stake and it will be burnt after unstake.
 
 ## Contracts
 
