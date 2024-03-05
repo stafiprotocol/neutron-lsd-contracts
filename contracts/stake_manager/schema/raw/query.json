@@ -337,6 +337,27 @@
     {
       "type": "object",
       "required": [
+        "decimals"
+      ],
+      "properties": {
+        "decimals": {
+          "type": "object",
+          "required": [
+            "remote_denom"
+          ],
+          "properties": {
+            "remote_denom": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
         "query_ids"
       ],
       "properties": {

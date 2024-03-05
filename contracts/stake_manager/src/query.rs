@@ -1,5 +1,6 @@
 use crate::state::{
-    IcaInfos, QueryIds, QueryKind, ERA_RATE, INFO_OF_ICA_ID, TOTAL_STACK_FEE, UNBONDING_SECONDS,
+    IcaInfos, QueryIds, QueryKind, DECIMALS, ERA_RATE, INFO_OF_ICA_ID, TOTAL_STACK_FEE,
+    UNBONDING_SECONDS,
 };
 use crate::state::{ADDRESS_TO_REPLY_ID, STACK};
 use crate::state::{POOLS, REPLY_ID_TO_QUERY_ID, UNSTAKES_INDEX_FOR_USER, UNSTAKES_OF_INDEX};
@@ -102,11 +103,15 @@ pub fn query_ids(deps: Deps<NeutronQuery>, pool_addr: String) -> NeutronResult<B
 
 pub fn query_unbonding_seconds(
     deps: Deps<NeutronQuery>,
-    rename_denom: String,
+    remote_denom: String,
 ) -> NeutronResult<Binary> {
     Ok(to_json_binary(
-        &UNBONDING_SECONDS.may_load(deps.storage, rename_denom)?,
+        &UNBONDING_SECONDS.load(deps.storage, remote_denom)?,
     )?)
+}
+
+pub fn query_decimals(deps: Deps<NeutronQuery>, remote_denom: String) -> NeutronResult<Binary> {
+    Ok(to_json_binary(&DECIMALS.load(deps.storage, remote_denom)?)?)
 }
 
 pub fn query_balance_by_addr(

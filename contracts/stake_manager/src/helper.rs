@@ -25,7 +25,7 @@ use neutron_sdk::NeutronResult;
 
 use crate::query_callback::register_query_submsg;
 use crate::state::{
-    IcaInfo, PoolInfo, QueryKind, SudoPayload, TxType, ERA_RATE, POOLS, TOTAL_STACK_FEE,
+    IcaInfo, PoolInfo, QueryKind, SudoPayload, TxType, DECIMALS, ERA_RATE, POOLS, TOTAL_STACK_FEE,
 };
 use crate::state::{ADDRESS_TO_REPLY_ID, INFO_OF_ICA_ID, REPLY_ID_TO_QUERY_ID};
 use crate::tx_callback::msg_with_sudo_callback;
@@ -36,7 +36,6 @@ pub const ICA_WITHDRAW_SUFIX: &str = "-withdraw_addr";
 pub const INTERCHAIN_ACCOUNT_ID_LEN_LIMIT: usize = 16;
 pub const CAL_BASE: Uint128 = Uint128::new(1_000_000);
 pub const DEFAULT_RATE: Uint128 = Uint128::new(1_000_000);
-pub const DEFAULT_DECIMALS: u8 = 6;
 pub const DEFAULT_ERA_SECONDS: u64 = 86400; // 24h
 pub const MIN_ERA_SECONDS: u64 = 28800; //8h
 pub const MAX_ERA_SECONDS: u64 = 86400; //24h
@@ -330,6 +329,7 @@ pub fn deal_pool(
     pool_info.lsd_token = contract_addr;
     pool_info.status = EraStatus::InitStarted;
 
+    let decimals = DECIMALS.load(deps.storage, pool_info.remote_denom.clone())?;
     let instantiate_lsd_msg = WasmMsg::Instantiate2 {
         admin: Option::from(info.sender.to_string()),
         code_id: lsd_code_id,
@@ -337,7 +337,7 @@ pub fn deal_pool(
             &(lsd_token::msg::InstantiateMsg {
                 name: lsd_token_name.clone(),
                 symbol: lsd_token_symbol,
-                decimals: DEFAULT_DECIMALS,
+                decimals,
                 initial_balances: vec![],
                 mint: Option::from(MinterResponse {
                     minter: env.contract.address.to_string(),
