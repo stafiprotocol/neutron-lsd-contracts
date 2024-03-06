@@ -21,3 +21,7 @@ make compile
 make compile_debug
 ./scripts/test.sh
 ```
+
+## License
+
+The license for Neutron LSD Contracts is the Business Source License 1.1 (BUSL-1.1), see [LICENSE](./LICENSE).
