@@ -5,6 +5,7 @@
 . ./scripts/deploy.sh
 . ./scripts/init_stack.sh
 . ./scripts/register_pool.sh
+. ./scripts/config_decimals.sh
 . ./scripts/init_pool.sh
 . ./scripts/config_pool.sh
 . ./scripts/era.sh
@@ -50,6 +51,7 @@ init_stack
 config_unbonding_seconds
 
 register_pool
+config_decimals
 init_pool
 config_pool
 
