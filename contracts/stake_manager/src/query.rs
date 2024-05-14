@@ -1,6 +1,6 @@
 use crate::state::{
-    IcaInfos, QueryIds, QueryKind, DECIMALS, ERA_RATE, INFO_OF_ICA_ID, TOTAL_STACK_FEE,
-    UNBONDING_SECONDS,
+    IcaInfos, QueryIds, QueryKind, DECIMALS, ERA_RATE, ICA_ID_OF_CREATOR, INFO_OF_ICA_ID,
+    TOTAL_STACK_FEE, UNBONDING_SECONDS,
 };
 use crate::state::{ADDRESS_TO_REPLY_ID, STACK};
 use crate::state::{POOLS, REPLY_ID_TO_QUERY_ID, UNSTAKES_INDEX_FOR_USER, UNSTAKES_OF_INDEX};
@@ -269,4 +269,15 @@ pub fn get_ica_registered_query(
 
     let res: QueryRegisteredQueryResponse = deps.querier.query(&query.into())?;
     Ok(res)
+}
+
+pub fn interchain_account_id_from_creator(
+    deps: Deps<NeutronQuery>,
+    addr: Addr,
+) -> NeutronResult<Binary> {
+    let ica_id_of_creator = ICA_ID_OF_CREATOR
+        .load(deps.storage, addr)
+        .unwrap_or_else(|_| vec![]);
+
+    Ok(to_json_binary(&ica_id_of_creator)?)
 }

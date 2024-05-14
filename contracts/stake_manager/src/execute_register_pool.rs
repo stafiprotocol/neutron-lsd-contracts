@@ -12,6 +12,7 @@ use neutron_sdk::{
 
 use crate::error_conversion::ContractError;
 use crate::helper;
+use crate::state::ICA_ID_OF_CREATOR;
 use crate::{
     helper::{get_withdraw_ica_id, ICA_WITHDRAW_SUFIX, INTERCHAIN_ACCOUNT_ID_LEN_LIMIT},
     state::{IcaInfo, PoolInfo, INFO_OF_ICA_ID, POOLS},
@@ -89,9 +90,18 @@ pub fn execute_register_pool(
                 ctrl_port_id: ctrl_port_id_of_withdraw,
                 ..Default::default()
             },
-            info.sender,
+            info.sender.clone(),
         ),
     )?;
+
+    let mut ica_id_of_creator = ICA_ID_OF_CREATOR
+        .load(deps.storage, info.sender.clone())
+        .unwrap_or_else(|_| vec![]);
+    if !ica_id_of_creator.contains(&interchain_account_id.clone()) {
+        ica_id_of_creator.push(interchain_account_id);
+    };
+
+    ICA_ID_OF_CREATOR.save(deps.storage, info.sender, &ica_id_of_creator)?;
 
     Ok(Response::default().add_messages(vec![register_pool_msg, register_withdraw_msg]))
 }

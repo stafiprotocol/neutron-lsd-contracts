@@ -21,7 +21,10 @@ use crate::helper::{
     QUERY_REPLY_ID_RANGE_END, QUERY_REPLY_ID_RANGE_START, REPLY_ID_RANGE_END, REPLY_ID_RANGE_START,
 };
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
-use crate::query::{query_balance_by_addr, query_decimals, query_validator_by_addr};
+use crate::query::{
+    interchain_account_id_from_creator, query_balance_by_addr, query_decimals,
+    query_validator_by_addr,
+};
 use crate::query::{query_delegation_by_addr, query_era_rate};
 use crate::query::{query_era_snapshot, query_total_stack_fee};
 use crate::query::{query_ids, query_user_unstake_index};
@@ -128,6 +131,9 @@ pub fn query(deps: Deps<NeutronQuery>, env: Env, msg: QueryMsg) -> NeutronResult
         QueryMsg::UnbondingSeconds { remote_denom } => query_unbonding_seconds(deps, remote_denom),
         QueryMsg::Decimals { remote_denom } => query_decimals(deps, remote_denom),
         QueryMsg::QueryIds { pool_addr } => query_ids(deps, pool_addr),
+        QueryMsg::InterchainAccountIdFromCreator { addr } => {
+            interchain_account_id_from_creator(deps, addr)
+        }
     }
 }
 

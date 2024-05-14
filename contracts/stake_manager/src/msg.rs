@@ -69,6 +69,8 @@ pub enum QueryMsg {
     Decimals { remote_denom: String },
     #[returns(QueryIds)]
     QueryIds { pool_addr: String },
+    #[returns(Vec<String>)]
+    InterchainAccountIdFromCreator { addr: Addr },
 }
 
 #[cw_serde]

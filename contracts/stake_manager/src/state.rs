@@ -367,6 +367,7 @@ pub const UNBONDING_SECONDS: Map<String, u64> = Map::new("unbonding_seconds");
 // denom -> decimals
 pub const DECIMALS: Map<String, u8> = Map::new("decimals");
 
+pub const ICA_ID_OF_CREATOR: Map<Addr, Vec<String>> = Map::new("ica_id_of_creator");
 #[cfg(test)]
 mod tests {
     use super::PoolInfo;
