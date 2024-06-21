@@ -5,6 +5,7 @@ pub mod contract;
 pub mod error_conversion;
 pub mod execute_config_decimals;
 pub mod execute_config_pool;
+pub mod execute_config_pool_stack_fee;
 pub mod execute_config_stack;
 pub mod execute_config_unbonding_seconds;
 pub mod execute_era_active;

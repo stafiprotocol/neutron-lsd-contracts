@@ -66,6 +66,18 @@
     {
       "type": "object",
       "required": [
+        "config_pool_stack_fee"
+      ],
+      "properties": {
+        "config_pool_stack_fee": {
+          "$ref": "#/definitions/ConfigPoolStackFeeParams"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
         "config_unbonding_seconds"
       ],
       "properties": {
@@ -630,6 +642,22 @@
           ],
           "format": "uint64",
           "minimum": 0.0
+        }
+      },
+      "additionalProperties": false
+    },
+    "ConfigPoolStackFeeParams": {
+      "type": "object",
+      "required": [
+        "pool_addr",
+        "stack_fee_commission"
+      ],
+      "properties": {
+        "pool_addr": {
+          "type": "string"
+        },
+        "stack_fee_commission": {
+          "$ref": "#/definitions/Uint128"
         }
       },
       "additionalProperties": false

@@ -70,12 +70,15 @@ pub fn execute_init_pool(
         return Err(ContractError::ParamsErrorFundsNotMatch {}.into());
     }
 
+    let stack_info = STACK.load(deps.storage)?;
+
     pool_info.ibc_denom = param.ibc_denom;
     pool_info.channel_id_of_ibc_denom = param.channel_id_of_ibc_denom;
     pool_info.remote_denom = param.remote_denom;
     pool_info.validator_addrs = param.validator_addrs.clone();
     pool_info.platform_fee_receiver = Addr::unchecked(param.platform_fee_receiver);
     pool_info.minimal_stake = param.minimal_stake;
+    pool_info.stack_fee_commission = stack_info.stack_fee_commission;
 
     // option
     if let Some(platform_fee_commission) = param.platform_fee_commission {
@@ -120,7 +123,7 @@ pub fn execute_init_pool(
 
     let code_id = match param.lsd_token_code_id {
         Some(lsd_code_id) => lsd_code_id,
-        None => STACK.load(deps.storage)?.lsd_token_code_id,
+        None => stack_info.lsd_token_code_id,
     };
 
     deal_pool(

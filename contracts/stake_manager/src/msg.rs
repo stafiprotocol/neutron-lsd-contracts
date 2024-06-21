@@ -99,6 +99,12 @@ pub struct ConfigStackParams {
 }
 
 #[cw_serde]
+pub struct ConfigPoolStackFeeParams {
+    pub pool_addr: String,
+    pub stack_fee_commission: Uint128,
+}
+
+#[cw_serde]
 pub struct ConfigPoolParams {
     pub pool_addr: String,
     pub platform_fee_receiver: Option<String>,
@@ -123,6 +129,7 @@ pub enum ExecuteMsg {
     InitPool(Box<InitPoolParams>),
     ConfigPool(Box<ConfigPoolParams>),
     ConfigStack(Box<ConfigStackParams>),
+    ConfigPoolStackFee(Box<ConfigPoolStackFeeParams>),
     ConfigUnbondingSeconds {
         remote_denom: String,
         unbonding_seconds: Option<u64>,

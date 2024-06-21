@@ -1,4 +1,5 @@
 use crate::execute_config_decimals::execute_config_decimals;
+use crate::execute_config_pool_stack_fee::execute_config_pool_stack_fee;
 use crate::execute_config_unbonding_seconds::execute_config_unbonding_seconds;
 use crate::execute_era_active::execute_era_active;
 use crate::execute_era_collect_withdraw::execute_era_collect_withdraw;
@@ -152,6 +153,9 @@ pub fn execute(
         ExecuteMsg::InitPool(params) => execute_init_pool(deps, env, info, *params),
         ExecuteMsg::ConfigPool(params) => execute_config_pool(deps, info, env, *params),
         ExecuteMsg::ConfigStack(params) => execute_config_stack(deps, info, *params),
+        ExecuteMsg::ConfigPoolStackFee(params) => {
+            execute_config_pool_stack_fee(deps, info, *params)
+        }
         ExecuteMsg::ConfigUnbondingSeconds {
             remote_denom,
             unbonding_seconds,

@@ -96,6 +96,18 @@
       {
         "type": "object",
         "required": [
+          "config_pool_stack_fee"
+        ],
+        "properties": {
+          "config_pool_stack_fee": {
+            "$ref": "#/definitions/ConfigPoolStackFeeParams"
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
           "config_unbonding_seconds"
         ],
         "properties": {
@@ -660,6 +672,22 @@
             ],
             "format": "uint64",
             "minimum": 0.0
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConfigPoolStackFeeParams": {
+        "type": "object",
+        "required": [
+          "pool_addr",
+          "stack_fee_commission"
+        ],
+        "properties": {
+          "pool_addr": {
+            "type": "string"
+          },
+          "stack_fee_commission": {
+            "$ref": "#/definitions/Uint128"
           }
         },
         "additionalProperties": false
@@ -1898,6 +1926,7 @@
         "redeemming_share_token_denom",
         "remote_denom",
         "share_tokens",
+        "stack_fee_commission",
         "status",
         "total_lsd_token_amount",
         "total_platform_fee",
@@ -1992,6 +2021,9 @@
           "items": {
             "$ref": "#/definitions/Coin"
           }
+        },
+        "stack_fee_commission": {
+          "$ref": "#/definitions/Uint128"
         },
         "status": {
           "$ref": "#/definitions/EraStatus"

@@ -48,8 +48,6 @@ pub fn execute_era_active(
         total_amount.amount = total_amount.amount.add(delegation.amount.amount);
     }
 
-    let stack_info = STACK.load(deps.storage)?;
-    let mut total_stack_fee = TOTAL_STACK_FEE.load(deps.storage, pool_addr.clone())?;
     // calculate protocol fee
     let (platform_fee, stack_fee) = if total_amount.amount > pool_info.era_snapshot.active {
         let reward = total_amount.amount.sub(pool_info.era_snapshot.active);
@@ -58,7 +56,7 @@ pub fn execute_era_active(
             .div(pool_info.rate);
 
         let stack_fee = platform_fee_raw
-            .mul(stack_info.stack_fee_commission)
+            .mul(pool_info.stack_fee_commission)
             .div(CAL_BASE);
         (platform_fee_raw.sub(stack_fee), stack_fee)
     } else {
@@ -135,6 +133,9 @@ pub fn execute_era_active(
         pool_info.total_platform_fee = pool_info.total_platform_fee.add(platform_fee);
     }
     if !stack_fee.is_zero() {
+        let stack_info = STACK.load(deps.storage)?;
+        let mut total_stack_fee = TOTAL_STACK_FEE.load(deps.storage, pool_addr.clone())?;
+
         let msg = WasmMsg::Execute {
             contract_addr: pool_info.lsd_token.to_string(),
             msg: to_json_binary(
@@ -148,10 +149,11 @@ pub fn execute_era_active(
         resp = resp.add_message(msg);
 
         total_stack_fee = total_stack_fee.add(stack_fee);
+
+        TOTAL_STACK_FEE.save(deps.storage, pool_addr.clone(), &total_stack_fee)?;
     }
 
     POOLS.save(deps.storage, pool_addr.clone(), &pool_info)?;
-    TOTAL_STACK_FEE.save(deps.storage, pool_addr.clone(), &total_stack_fee)?;
     ERA_RATE.save(
         deps.storage,
         (pool_addr.clone(), pool_info.era),
