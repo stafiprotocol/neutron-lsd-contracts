@@ -1,22 +1,21 @@
 use crate::{
     error_conversion::ContractError,
-    helper::DEFAULT_TIMEOUT_SECONDS,
-    helper::{min_ntrn_ibc_fee, redeem_token_for_share_msg},
+    helper::{self, redeem_token_for_share_msg, DEFAULT_TIMEOUT_SECONDS},
     state::POOLS,
 };
 use crate::{
     state::{SudoPayload, TxType, INFO_OF_ICA_ID},
     tx_callback::msg_with_sudo_callback,
 };
-use cosmwasm_std::{DepsMut, Response};
+use cosmwasm_std::{DepsMut, MessageInfo, Response};
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
-    query::min_ibc_fee::query_min_ibc_fee,
     NeutronResult,
 };
 
 pub fn execute_redeem_token_for_share(
     mut deps: DepsMut<NeutronQuery>,
+    info: MessageInfo,
     pool_addr: String,
     tokens: Vec<cosmwasm_std::Coin>,
 ) -> NeutronResult<Response<NeutronMsg>> {
@@ -24,8 +23,11 @@ pub fn execute_redeem_token_for_share(
         return Err(ContractError::TokensLenNotMatch {}.into());
     }
     let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
-    let (pool_ica_info, _, _) = INFO_OF_ICA_ID.load(deps.storage, pool_info.ica_id.clone())?;
+    if !pool_info.lsm_support {
+        return Err(ContractError::LsmStakeNotSupport {}.into());
+    }
 
+    let (pool_ica_info, _, _) = INFO_OF_ICA_ID.load(deps.storage, pool_info.ica_id.clone())?;
     let mut denoms = vec![];
     let mut msgs = vec![];
 
@@ -47,7 +49,7 @@ pub fn execute_redeem_token_for_share(
         ));
     }
 
-    let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
+    let ibc_fee = helper::check_ibc_fee(deps.as_ref(), &info)?;
     let submsg = msg_with_sudo_callback(
         deps.branch(),
         NeutronMsg::submit_tx(
@@ -56,7 +58,7 @@ pub fn execute_redeem_token_for_share(
             msgs,
             "".to_string(),
             DEFAULT_TIMEOUT_SECONDS,
-            fee,
+            ibc_fee,
         ),
         SudoPayload {
             port_id: pool_ica_info.ctrl_port_id,

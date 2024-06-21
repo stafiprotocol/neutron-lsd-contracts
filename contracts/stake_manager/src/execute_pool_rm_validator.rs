@@ -1,6 +1,6 @@
 use crate::error_conversion::ContractError;
+use crate::helper;
 use crate::helper::gen_redelegate_txs;
-use crate::helper::min_ntrn_ibc_fee;
 use crate::helper::DEFAULT_TIMEOUT_SECONDS;
 use crate::query::query_delegation_by_addr;
 use crate::state::{SudoPayload, TxType, ValidatorUpdateStatus, INFO_OF_ICA_ID, POOLS};
@@ -8,7 +8,6 @@ use crate::tx_callback::msg_with_sudo_callback;
 use cosmwasm_std::{DepsMut, MessageInfo, Response};
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
-    query::min_ibc_fee::query_min_ibc_fee,
     NeutronResult,
 };
 use std::vec;
@@ -50,7 +49,7 @@ pub fn execute_rm_pool_validator(
             pool_info.validator_update_status = ValidatorUpdateStatus::WaitQueryUpdate;
             pool_info.validator_addrs = left_validators;
         } else {
-            let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
+            let ibc_fee = helper::check_ibc_fee(deps.as_ref(), &info)?;
             let (pool_ica_info, _, _) =
                 INFO_OF_ICA_ID.load(deps.storage, pool_info.ica_id.clone())?;
 
@@ -66,7 +65,7 @@ pub fn execute_rm_pool_validator(
                 )],
                 "".to_string(),
                 DEFAULT_TIMEOUT_SECONDS,
-                fee,
+                ibc_fee,
             );
 
             let submsg_redelegate = msg_with_sudo_callback(

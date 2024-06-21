@@ -169,7 +169,7 @@ pub fn execute(
             closed_channel_id,
         } => execute_open_channel(deps, info, pool_addr, closed_channel_id),
         ExecuteMsg::RedeemTokenForShare { pool_addr, tokens } => {
-            execute_redeem_token_for_share(deps, pool_addr, tokens)
+            execute_redeem_token_for_share(deps, info, pool_addr, tokens)
         }
         ExecuteMsg::Stake {
             neutron_address,
@@ -180,7 +180,7 @@ pub fn execute(
             pool_addr,
             receiver,
             unstake_index_list,
-        } => execute_withdraw(deps, env, info, pool_addr, receiver, unstake_index_list),
+        } => execute_withdraw(deps, info, pool_addr, receiver, unstake_index_list),
         ExecuteMsg::PoolRmValidator {
             pool_addr,
             validator_addr,
@@ -197,12 +197,12 @@ pub fn execute(
         ExecuteMsg::PoolUpdateValidatorsIcq { pool_addr } => {
             execute_update_validators_icq(deps, env, info, pool_addr)
         }
-        ExecuteMsg::EraUpdate { pool_addr } => execute_era_update(deps, env, pool_addr),
-        ExecuteMsg::EraStake { pool_addr } => execute_era_stake(deps, env, pool_addr),
+        ExecuteMsg::EraUpdate { pool_addr } => execute_era_update(deps, env, info, pool_addr),
+        ExecuteMsg::EraStake { pool_addr } => execute_era_stake(deps, env, info, pool_addr),
         ExecuteMsg::EraCollectWithdraw { pool_addr } => {
-            execute_era_collect_withdraw(deps, pool_addr)
+            execute_era_collect_withdraw(deps, info, pool_addr)
         }
-        ExecuteMsg::EraRestake { pool_addr } => execute_era_restake(deps, pool_addr),
+        ExecuteMsg::EraRestake { pool_addr } => execute_era_restake(deps, info, pool_addr),
         ExecuteMsg::EraActive { pool_addr } => execute_era_active(deps, pool_addr),
         ExecuteMsg::StakeLsm {
             neutron_address,

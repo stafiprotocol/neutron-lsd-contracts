@@ -1,20 +1,18 @@
-use cosmwasm_std::{DepsMut, Env, Response, Uint128};
-
-use neutron_sdk::{
-    bindings::{msg::NeutronMsg, query::NeutronQuery},
-    query::min_ibc_fee::query_min_ibc_fee,
-    NeutronError, NeutronResult,
-};
-
-use crate::helper::{gen_msg_send, get_withdraw_ica_id, min_ntrn_ibc_fee};
+use crate::helper::{self, gen_msg_send, get_withdraw_ica_id};
 use crate::query::query_balance_by_addr;
 use crate::state::EraStatus::{EraStakeEnded, WithdrawEnded, WithdrawStarted};
 use crate::state::{SudoPayload, TxType, INFO_OF_ICA_ID, POOLS};
 use crate::tx_callback::msg_with_sudo_callback;
 use crate::{error_conversion::ContractError, helper::DEFAULT_TIMEOUT_SECONDS};
+use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, Uint128};
+use neutron_sdk::{
+    bindings::{msg::NeutronMsg, query::NeutronQuery},
+    NeutronError, NeutronResult,
+};
 
 pub fn execute_era_collect_withdraw(
     mut deps: DepsMut<NeutronQuery>,
+    info: MessageInfo,
     pool_addr: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
@@ -57,7 +55,7 @@ pub fn execute_era_collect_withdraw(
         return Ok(Response::default());
     }
 
-    let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
+    let ibc_fee = helper::check_ibc_fee(deps.as_ref(), &info)?;
     let cosmos_msg = NeutronMsg::submit_tx(
         withdraw_ica_info.ctrl_connection_id.clone(),
         get_withdraw_ica_id(pool_info.ica_id.clone()),
@@ -69,7 +67,7 @@ pub fn execute_era_collect_withdraw(
         )?],
         "".to_string(),
         DEFAULT_TIMEOUT_SECONDS,
-        fee.clone(),
+        ibc_fee.clone(),
     );
 
     let submsg = msg_with_sudo_callback(

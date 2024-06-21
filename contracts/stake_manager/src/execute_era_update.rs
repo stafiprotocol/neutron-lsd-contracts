@@ -1,13 +1,12 @@
-use cosmwasm_std::{coin, DepsMut, Env, Response, Uint128};
+use cosmwasm_std::{coin, DepsMut, Env, MessageInfo, Response, Uint128};
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
-    query::min_ibc_fee::query_min_ibc_fee,
     sudo::msg::RequestPacketTimeoutHeight,
     NeutronResult,
 };
 use std::ops::{Add, Div, Sub};
 
-use crate::helper::{get_update_pool_icq_msgs, DEFAULT_FAST_PERIOD, DEFAULT_TIMEOUT_SECONDS};
+use crate::helper::{self, get_update_pool_icq_msgs, DEFAULT_FAST_PERIOD, DEFAULT_TIMEOUT_SECONDS};
 use crate::state::EraSnapshot;
 use crate::state::{INFO_OF_ICA_ID, POOLS};
 use crate::{
@@ -15,7 +14,6 @@ use crate::{
     state::EraStatus::{ActiveEnded, EraUpdateEnded, EraUpdateStarted},
 };
 use crate::{
-    helper::min_ntrn_ibc_fee,
     state::{SudoPayload, TxType},
     tx_callback::msg_with_sudo_callback,
 };
@@ -23,6 +21,7 @@ use crate::{
 pub fn execute_era_update(
     mut deps: DepsMut<NeutronQuery>,
     env: Env,
+    info: MessageInfo,
     pool_addr: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
     let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
@@ -85,7 +84,7 @@ pub fn execute_era_update(
         pool_info.ibc_denom.clone(),
     );
     // See more info here: https://docs.neutron.org/neutron/feerefunder/overview
-    let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
+    let ibc_fee = helper::check_ibc_fee(deps.as_ref(), &info)?;
     let msg: NeutronMsg = NeutronMsg::IbcTransfer {
         source_port: "transfer".to_string(),
         source_channel: pool_info.channel_id_of_ibc_denom.clone(),
@@ -98,7 +97,7 @@ pub fn execute_era_update(
         },
         timeout_timestamp: env.block.time.nanos() + DEFAULT_TIMEOUT_SECONDS * 1_000_000_000,
         memo: "".to_string(),
-        fee: fee.clone(),
+        fee: ibc_fee.clone(),
     };
 
     let (pool_ica_info, _, _) = INFO_OF_ICA_ID.load(deps.storage, pool_info.ica_id.clone())?;

@@ -1,5 +1,5 @@
 use crate::error_conversion::ContractError;
-use crate::helper::min_ntrn_ibc_fee;
+use crate::helper::{self};
 use crate::state::INFO_OF_ICA_ID;
 use crate::state::{ValidatorUpdateStatus, POOLS};
 use crate::{
@@ -11,7 +11,6 @@ use crate::{helper::DEFAULT_TIMEOUT_SECONDS, query::query_delegation_by_addr};
 use cosmwasm_std::{DepsMut, MessageInfo, Response};
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
-    query::min_ibc_fee::query_min_ibc_fee,
     NeutronResult,
 };
 use std::vec;
@@ -69,7 +68,7 @@ pub fn execute_pool_update_validator(
     let mut resp = Response::default(); // .add_message(remove_msg_old_query)
 
     if !msgs.is_empty() {
-        let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
+        let ibc_fee = helper::check_ibc_fee(deps.as_ref(), &info)?;
 
         let submsg_redelegate = msg_with_sudo_callback(
             deps.branch(),
@@ -79,7 +78,7 @@ pub fn execute_pool_update_validator(
                 msgs,
                 "".to_string(),
                 DEFAULT_TIMEOUT_SECONDS,
-                fee.clone(),
+                ibc_fee,
             ),
             SudoPayload {
                 port_id: pool_ica_info.ctrl_port_id,

@@ -1,12 +1,10 @@
+use crate::state::STACK;
+use crate::{msg::ConfigPoolStackFeeParams, state::POOLS};
 use cosmwasm_std::{DepsMut, MessageInfo, Response};
-
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
     NeutronResult,
 };
-
-use crate::state::STACK;
-use crate::{msg::ConfigPoolStackFeeParams, state::POOLS};
 
 pub fn execute_config_pool_stack_fee(
     deps: DepsMut<NeutronQuery>,

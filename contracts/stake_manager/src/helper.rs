@@ -20,6 +20,7 @@ use neutron_sdk::interchain_queries::v045::new_register_delegator_delegations_qu
 use neutron_sdk::interchain_queries::v045::{
     new_register_balance_query_msg, new_register_staking_validators_query_msg,
 };
+use neutron_sdk::query::min_ibc_fee::query_min_ibc_fee;
 use neutron_sdk::NeutronError;
 use neutron_sdk::NeutronResult;
 
@@ -93,6 +94,18 @@ pub fn total_ibc_fee(ibc_fee: IbcFee) -> Uint128 {
     };
 
     recv_fee.add(ack_fee).add(time_out_fee)
+}
+
+pub fn check_ibc_fee(deps: Deps<NeutronQuery>, info: &MessageInfo) -> NeutronResult<IbcFee> {
+    let ibc_fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps)?.min_fee);
+    let total_ibc_fee = total_ibc_fee(ibc_fee.clone());
+    if !(info.funds.len() == 1
+        && info.funds[0].denom == FEE_DENOM
+        && info.funds[0].amount >= total_ibc_fee)
+    {
+        return Err(ContractError::ParamsErrorFundsNotMatch {}.into());
+    }
+    return Ok(ibc_fee);
 }
 
 pub fn gen_delegation_txs(

@@ -1,14 +1,11 @@
-use std::ops::{Div, Sub};
-
+use crate::{error_conversion::ContractError, msg::ConfigPoolParams, state::UNBONDING_SECONDS};
+use crate::{helper::MAX_ERA_SECONDS, helper::MIN_ERA_SECONDS, state::POOLS};
 use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response};
-
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
     NeutronResult,
 };
-
-use crate::{error_conversion::ContractError, msg::ConfigPoolParams, state::UNBONDING_SECONDS};
-use crate::{helper::MAX_ERA_SECONDS, helper::MIN_ERA_SECONDS, state::POOLS};
+use std::ops::{Div, Sub};
 
 pub fn execute_config_pool(
     deps: DepsMut<NeutronQuery>,

@@ -1,21 +1,19 @@
-use crate::helper::{gen_msg_send, min_ntrn_ibc_fee};
+use crate::helper::{self, gen_msg_send};
 use crate::state::{
     SudoPayload, TxType, WithdrawStatus, INFO_OF_ICA_ID, POOLS, UNSTAKES_INDEX_FOR_USER,
     UNSTAKES_OF_INDEX,
 };
 use crate::tx_callback::msg_with_sudo_callback;
 use crate::{error_conversion::ContractError, helper::DEFAULT_TIMEOUT_SECONDS};
-use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response, Uint128};
+use cosmwasm_std::{Addr, DepsMut, MessageInfo, Response, Uint128};
 use neutron_sdk::{
     bindings::{msg::NeutronMsg, query::NeutronQuery},
-    query::min_ibc_fee::query_min_ibc_fee,
     NeutronResult,
 };
 use std::vec;
 
 pub fn execute_withdraw(
     mut deps: DepsMut<NeutronQuery>,
-    _: Env,
     info: MessageInfo,
     pool_addr: String,
     receiver: Addr,
@@ -68,7 +66,7 @@ pub fn execute_withdraw(
         .join("_");
 
     let (pool_ica_info, _, _) = INFO_OF_ICA_ID.load(deps.storage, pool_info.ica_id.clone())?;
-    let fee = min_ntrn_ibc_fee(query_min_ibc_fee(deps.as_ref())?.min_fee);
+    let ibc_fee = helper::check_ibc_fee(deps.as_ref(), &info)?;
     let cosmos_msg = NeutronMsg::submit_tx(
         pool_ica_info.ctrl_connection_id.clone(),
         pool_info.ica_id.clone(),
@@ -80,7 +78,7 @@ pub fn execute_withdraw(
         )?],
         "".to_string(),
         DEFAULT_TIMEOUT_SECONDS,
-        fee,
+        ibc_fee,
     );
 
     // We use a submessage here because we need the process message reply to save
