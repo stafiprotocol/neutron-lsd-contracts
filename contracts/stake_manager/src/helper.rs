@@ -20,6 +20,7 @@ use neutron_sdk::interchain_queries::v045::new_register_delegator_delegations_qu
 use neutron_sdk::interchain_queries::v045::{
     new_register_balance_query_msg, new_register_staking_validators_query_msg,
 };
+use neutron_sdk::interchain_queries::v047::register_queries::new_register_delegator_delegations_query_msg as v047_new_register_delegator_delegations_query_msg;
 use neutron_sdk::query::min_ibc_fee::query_min_ibc_fee;
 use neutron_sdk::NeutronError;
 use neutron_sdk::NeutronResult;
@@ -310,7 +311,29 @@ pub fn get_update_pool_icq_msgs(
     msgs.push(update_pool_validators_msg);
     Ok(msgs)
 }
-
+pub fn register_delegator_delegations_query_msg(
+    connection_id: String,
+    delegator: String,
+    validators: Vec<String>,
+    update_period: u64,
+    sdk_greater_or_euqal_v47: bool,
+) -> NeutronResult<NeutronMsg> {
+    if sdk_greater_or_euqal_v47 {
+        v047_new_register_delegator_delegations_query_msg(
+            connection_id,
+            delegator,
+            validators,
+            update_period,
+        )
+    } else {
+        new_register_delegator_delegations_query_msg(
+            connection_id,
+            delegator,
+            validators,
+            update_period,
+        )
+    }
+}
 pub fn deal_pool(
     mut deps: DepsMut<NeutronQuery>,
     env: Env,
@@ -400,11 +423,12 @@ pub fn deal_pool(
     )?;
     let register_delegation_submsg = register_query_submsg(
         deps.branch(),
-        new_register_delegator_delegations_query_msg(
+        register_delegator_delegations_query_msg(
             pool_ica_info.ctrl_connection_id.clone(),
             pool_ica_info.ica_addr.clone(),
             pool_info.validator_addrs.clone(),
             DEFAULT_UPDATE_PERIOD,
+            pool_info.sdk_greater_or_equal_v047,
         )?,
         pool_ica_info.ica_addr.clone(),
         QueryKind::Delegations,
@@ -515,11 +539,12 @@ pub fn deal_validators_icq_update(
     pool_info: PoolInfo,
     ctrl_connection_id: String,
 ) -> NeutronResult<Response<NeutronMsg>> {
-    let new_delegations_keys = match new_register_delegator_delegations_query_msg(
+    let new_delegations_keys = match register_delegator_delegations_query_msg(
         ctrl_connection_id.clone(),
         pool_addr.clone(),
         pool_info.validator_addrs.clone(),
         DEFAULT_UPDATE_PERIOD,
+        pool_info.sdk_greater_or_equal_v047,
     ) {
         Ok(NeutronMsg::RegisterInterchainQuery { keys, .. }) => keys,
         _ => return Err(ContractError::ICQNewKeyBuildFailed {}.into()),

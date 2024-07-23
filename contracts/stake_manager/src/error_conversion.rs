@@ -14,8 +14,8 @@ pub enum ContractError {
     #[error("Pending share token not empty")]
     PendingShareNotEmpty {},
 
-    #[error("Delegations not exist")]
-    DelegationsNotExist {},
+    #[error("Delegations not exist: {0}")]
+    DelegationsNotExist(String),
 
     #[error("Rate change over limit")]
     RateChangeOverLimit {},

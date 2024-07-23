@@ -3,13 +3,12 @@ use cosmwasm_std::{Addr, Coin, Uint128};
 
 use neutron_sdk::{
     bindings::query::{QueryInterchainAccountAddressResponse, QueryRegisteredQueryResponse},
-    interchain_queries::v045::queries::{
-        BalanceResponse, DelegatorDelegationsResponse, ValidatorResponse,
-    },
+    interchain_queries::v045::queries::{BalanceResponse, ValidatorResponse},
 };
 
 use crate::state::{
-    EraSnapshot, IcaInfo, IcaInfos, PoolInfo, QueryIds, QueryKind, Stack, UnstakeInfo,
+    DelegatorDelegationsResponse, EraSnapshot, IcaInfo, IcaInfos, PoolInfo, QueryIds, QueryKind,
+    Stack, UnstakeInfo,
 };
 
 #[cw_serde]
@@ -31,7 +30,10 @@ pub enum QueryMsg {
     #[returns(BalanceResponse)]
     Balance { ica_addr: String },
     #[returns(DelegatorDelegationsResponse)]
-    Delegations { pool_addr: String },
+    Delegations {
+        pool_addr: String,
+        sdk_greater_or_equal_v047: bool,
+    },
     #[returns(ValidatorResponse)]
     Validators { pool_addr: String },
     #[returns(PoolInfo)]
@@ -85,6 +87,7 @@ pub struct InitPoolParams {
     pub lsd_token_name: String,
     pub lsd_token_symbol: String,
     pub minimal_stake: Uint128,
+    pub sdk_greater_or_equal_v047: bool,
     pub platform_fee_commission: Option<Uint128>,
 }
 

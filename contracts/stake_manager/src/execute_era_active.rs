@@ -34,8 +34,12 @@ pub fn execute_era_active(
         return Err(ContractError::PendingShareNotEmpty {}.into());
     }
 
-    let delegations_resp = query_delegation_by_addr(deps.as_ref(), pool_addr.clone())
-        .map_err(|_| ContractError::DelegationsNotExist {})?;
+    let delegations_resp = query_delegation_by_addr(
+        deps.as_ref(),
+        pool_addr.clone(),
+        pool_info.sdk_greater_or_equal_v047,
+    )
+    .map_err(|e| ContractError::DelegationsNotExist(e.to_string()))?;
     if delegations_resp.last_submitted_local_height <= pool_info.era_snapshot.last_step_height {
         return Err(ContractError::DelegationSubmissionHeight {}.into());
     }

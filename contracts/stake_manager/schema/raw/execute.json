@@ -729,6 +729,7 @@
         "minimal_stake",
         "platform_fee_receiver",
         "remote_denom",
+        "sdk_greater_or_equal_v047",
         "validator_addrs"
       ],
       "properties": {
@@ -773,6 +774,9 @@
         },
         "remote_denom": {
           "type": "string"
+        },
+        "sdk_greater_or_equal_v047": {
+          "type": "boolean"
         },
         "validator_addrs": {
           "type": "array",

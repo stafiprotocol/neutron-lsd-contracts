@@ -50,7 +50,11 @@ pub fn execute_era_stake(
             .unbond
             .sub(pool_info.era_snapshot.bond);
 
-        let delegations = query_delegation_by_addr(deps.as_ref(), pool_addr.clone())?;
+        let delegations = query_delegation_by_addr(
+            deps.as_ref(),
+            pool_addr.clone(),
+            pool_info.sdk_greater_or_equal_v047,
+        )?;
         if delegations.last_submitted_local_height <= pool_info.era_snapshot.last_step_height {
             return Err(ContractError::DelegationSubmissionHeight {}.into());
         }
