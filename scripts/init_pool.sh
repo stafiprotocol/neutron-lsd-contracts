@@ -13,7 +13,8 @@ init_pool() {
       "platform_fee_receiver": "%s",
       "lsd_token_name": "lsdTokenNameX",
       "lsd_token_symbol": "symbolX",
-      "minimal_stake": "100"
+      "minimal_stake": "100",
+      "sdk_greater_or_equal_v047": false
     }
   }' "$ADDRESS_1")
 

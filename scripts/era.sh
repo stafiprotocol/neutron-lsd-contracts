@@ -5,7 +5,6 @@ redeem_token_for_share() {
   echo "-------------------------- redeem token for share -------------------------------------"
 
   query="$(printf '{"pool_info": {"pool_addr": "%s"}}' "$pool_address")"
-  echo "pool_info after config is: "
   tokens=$(neutrond query wasm contract-state smart "$contract_address" "$query" --node "$NEUTRON_NODE" --output json | jq ".data.share_tokens")
 
   # era_update round 1
@@ -19,6 +18,7 @@ redeem_token_for_share() {
   echo "redeem msg: $redeem_msg"
   tx_result="$(neutrond tx wasm execute "$contract_address" "$redeem_msg" \
     --from "$ADDRESS_1" -y --chain-id "$CHAIN_ID_1" --output json \
+    --amount 2000000untrn \
     --broadcast-mode=sync --gas-prices 0.0025untrn --gas 1000000 \
     --keyring-backend=test --home "$HOME_1" --node "$NEUTRON_NODE" | wait_tx)"
 
@@ -47,6 +47,7 @@ process_era() {
 
   tx_result="$(neutrond tx wasm execute "$contract_address" "$era_update_msg" \
     --from "$ADDRESS_1" -y --chain-id "$CHAIN_ID_1" --output json \
+    --amount 2000000untrn \
     --broadcast-mode=sync --gas-prices 0.0025untrn --gas 1000000 \
     --keyring-backend=test --home "$HOME_1" --node "$NEUTRON_NODE" | wait_tx)"
 
@@ -76,6 +77,7 @@ process_era() {
 
   tx_result="$(neutrond tx wasm execute "$contract_address" "$bond_msg" \
     --from "$ADDRESS_1" -y --chain-id "$CHAIN_ID_1" --output json \
+    --amount 2000000untrn \
     --broadcast-mode=sync --gas-prices 0.0025untrn --gas 1000000 \
     --keyring-backend=test --home "$HOME_1" --node "$NEUTRON_NODE" | wait_tx)"
 
@@ -107,6 +109,7 @@ process_era() {
 
   tx_result="$(neutrond tx wasm execute "$contract_address" "$era_collect_withdraw_msg" \
     --from "$ADDRESS_1" -y --chain-id "$CHAIN_ID_1" --output json \
+    --amount 2000000untrn \
     --broadcast-mode=sync --gas-prices 0.0025untrn --gas 1000000 \
     --keyring-backend=test --home "$HOME_1" --node "$NEUTRON_NODE" | wait_tx)"
 
@@ -132,6 +135,7 @@ process_era() {
 
   tx_result="$(neutrond tx wasm execute "$contract_address" "$era_rebond_msg" \
     --from "$ADDRESS_1" -y --chain-id "$CHAIN_ID_1" --output json \
+    --amount 2000000untrn \
     --broadcast-mode=sync --gas-prices 0.0025untrn --gas 1000000 \
     --keyring-backend=test --home "$HOME_1" --node "$NEUTRON_NODE" | wait_tx)"
 
@@ -176,7 +180,7 @@ process_era() {
   echo "$query"
   neutrond query wasm contract-state smart "$contract_address" "$query" --node "$NEUTRON_NODE" --output json | jq
 
-  query="$(printf '{"delegations": {"pool_addr": "%s"}}' "$pool_address")"
+  query="$(printf '{"delegations": {"pool_addr": "%s", "sdk_greater_or_equal_v047": false}}' "$pool_address")"
   echo "the query is $query"
   neutrond query wasm contract-state smart "$contract_address" "$query" --node "$NEUTRON_NODE" --output json | jq
   
