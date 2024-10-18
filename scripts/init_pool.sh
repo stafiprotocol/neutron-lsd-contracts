@@ -14,7 +14,7 @@ init_pool() {
       "lsd_token_name": "lsdTokenNameX",
       "lsd_token_symbol": "symbolX",
       "minimal_stake": "100",
-      "sdk_greater_or_equal_v047": false
+      "sdk_greater_or_equal_v047": true
     }
   }' "$ADDRESS_1")
 
