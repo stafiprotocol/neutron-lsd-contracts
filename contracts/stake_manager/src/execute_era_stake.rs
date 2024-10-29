@@ -333,6 +333,8 @@ pub fn sudo_era_bond_callback(
 
     pool_info.status = EraStakeEnded;
     pool_info.era_snapshot.last_step_height = env.block.height;
+    pool_info.bond -= pool_info.era_snapshot.bond;
+    pool_info.unbond -= pool_info.era_snapshot.unbond;
     POOLS.save(deps.storage, payload.pool_addr.clone(), &pool_info)?;
 
     Ok(Response::new())
