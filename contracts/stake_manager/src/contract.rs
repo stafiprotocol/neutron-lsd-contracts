@@ -35,7 +35,7 @@ use crate::query::{
 };
 use crate::query::{query_stack_info, query_unbonding_seconds};
 use crate::query_callback::write_reply_id_to_query_id;
-use crate::state::{Stack, STACK};
+use crate::state::{PoolInfo, Stack, OLD_POOLS, POOLS, STACK};
 use crate::tx_callback::{prepare_sudo_payload, sudo_error, sudo_response, sudo_timeout};
 use crate::{error_conversion::ContractError, query_callback::sudo_kv_query_result};
 use crate::{execute_config_pool::execute_config_pool, query::get_ica_registered_query};
@@ -85,6 +85,53 @@ pub fn instantiate(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+
+    let old_pool = OLD_POOLS.load(
+        deps.storage,
+        "cosmos1p4d5ypwaj2yd74lsszd8an7257cepypgg2nvuptnvnx7spqv989qd32kl5".to_string(),
+    )?;
+    let new_pool = PoolInfo {
+        bond: old_pool.bond,
+        unbond: old_pool.unbond,
+        active: old_pool.active,
+        lsd_token: old_pool.lsd_token,
+        ica_id: old_pool.ica_id,
+        ibc_denom: old_pool.ibc_denom,
+        channel_id_of_ibc_denom: old_pool.channel_id_of_ibc_denom,
+        remote_denom: old_pool.remote_denom,
+        validator_addrs: old_pool.validator_addrs,
+        era: old_pool.era,
+        rate: old_pool.rate,
+        era_seconds: old_pool.era_seconds,
+        offset: old_pool.offset,
+        minimal_stake: old_pool.minimal_stake,
+        unstake_times_limit: old_pool.unstake_times_limit,
+        next_unstake_index: old_pool.next_unstake_index,
+        unbonding_period: old_pool.unbonding_period,
+        status: old_pool.status,
+        validator_update_status: old_pool.validator_update_status,
+        unbond_commission: old_pool.unbond_commission,
+        platform_fee_commission: old_pool.platform_fee_commission,
+        stack_fee_commission: old_pool.stack_fee_commission,
+        total_platform_fee: old_pool.total_platform_fee,
+        total_lsd_token_amount: old_pool.total_lsd_token_amount,
+        platform_fee_receiver: old_pool.platform_fee_receiver,
+        admin: old_pool.admin,
+        share_tokens: old_pool.share_tokens,
+        redeemming_share_token_denom: old_pool.redeemming_share_token_denom,
+        era_snapshot: old_pool.era_snapshot,
+        paused: old_pool.paused,
+        lsm_support: old_pool.lsm_support,
+        lsm_pending_limit: old_pool.lsm_pending_limit,
+        rate_change_limit: old_pool.rate_change_limit,
+        sdk_greater_or_equal_v047: false,
+    };
+
+    POOLS.save(
+        deps.storage,
+        "cosmos1p4d5ypwaj2yd74lsszd8an7257cepypgg2nvuptnvnx7spqv989qd32kl5".to_string(),
+        &new_pool,
+    )?;
     Ok(Response::default())
 }
 

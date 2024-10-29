@@ -41,6 +41,43 @@ pub struct EraSnapshot {
 }
 
 #[cw_serde]
+pub struct OldPoolInfo {
+    pub bond: Uint128,
+    pub unbond: Uint128,
+    pub active: Uint128,
+    pub lsd_token: Addr,
+    pub ica_id: String,
+    pub ibc_denom: String,
+    pub channel_id_of_ibc_denom: String,
+    pub remote_denom: String,
+    pub validator_addrs: Vec<String>,
+    pub era: u64,
+    pub rate: Uint128,
+    pub era_seconds: u64,
+    pub offset: i64,
+    pub minimal_stake: Uint128,
+    pub unstake_times_limit: u64,
+    pub next_unstake_index: u64,
+    pub unbonding_period: u64,
+    pub status: EraStatus,
+    pub validator_update_status: ValidatorUpdateStatus,
+    pub unbond_commission: Uint128,
+    pub platform_fee_commission: Uint128,
+    pub stack_fee_commission: Uint128,
+    pub total_platform_fee: Uint128,
+    pub total_lsd_token_amount: Uint128,
+    pub platform_fee_receiver: Addr,
+    pub admin: Addr,
+    pub share_tokens: Vec<cosmwasm_std::Coin>,
+    pub redeemming_share_token_denom: Vec<String>,
+    pub era_snapshot: EraSnapshot,
+    pub paused: bool,
+    pub lsm_support: bool,
+    pub lsm_pending_limit: u64,
+    pub rate_change_limit: Uint128,
+}
+
+#[cw_serde]
 pub struct PoolInfo {
     pub bond: Uint128,
     pub unbond: Uint128,
@@ -150,6 +187,7 @@ impl PoolInfo {
 }
 
 pub const POOLS: Map<String, PoolInfo> = Map::new("pools");
+pub const OLD_POOLS: Map<String, OldPoolInfo> = Map::new("pools");
 
 #[cw_serde]
 pub enum EraStatus {
