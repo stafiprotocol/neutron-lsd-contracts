@@ -35,7 +35,7 @@ use crate::query::{
 };
 use crate::query::{query_stack_info, query_unbonding_seconds};
 use crate::query_callback::write_reply_id_to_query_id;
-use crate::state::{Stack, STACK};
+use crate::state::{Stack, POOLS, STACK};
 use crate::tx_callback::{prepare_sudo_payload, sudo_error, sudo_response, sudo_timeout};
 use crate::{error_conversion::ContractError, query_callback::sudo_kv_query_result};
 use crate::{execute_config_pool::execute_config_pool, query::get_ica_registered_query};
@@ -85,6 +85,19 @@ pub fn instantiate(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+    let mut pool_info = POOLS.load(
+        deps.storage,
+        "cosmos1p4d5ypwaj2yd74lsszd8an7257cepypgg2nvuptnvnx7spqv989qd32kl5".to_string(),
+    )?;
+    pool_info.bond -= pool_info.era_snapshot.bond;
+    pool_info.unbond -= pool_info.era_snapshot.unbond;
+
+    POOLS.save(
+        deps.storage,
+        "cosmos1p4d5ypwaj2yd74lsszd8an7257cepypgg2nvuptnvnx7spqv989qd32kl5".to_string(),
+        &pool_info,
+    )?;
+
     Ok(Response::default())
 }
 
