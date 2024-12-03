@@ -1,23 +1,22 @@
 use crate::state::{
-    DelegatorDelegationsResponse, IcaInfos, QueryIds, QueryKind, DECIMALS, ERA_RATE,
-    ICA_ID_OF_CREATOR, INFO_OF_ICA_ID, TOTAL_STACK_FEE, UNBONDING_SECONDS,
+    BalanceResponse, Balances, DelegatorDelegationsResponse, IcaInfos, QueryIds, QueryKind,
+    DECIMALS, ERA_RATE, ICA_ID_OF_CREATOR, INFO_OF_ICA_ID, TOTAL_STACK_FEE, UNBONDING_SECONDS,
 };
 use crate::state::{ADDRESS_TO_REPLY_ID, STACK};
 use crate::state::{POOLS, REPLY_ID_TO_QUERY_ID, UNSTAKES_INDEX_FOR_USER, UNSTAKES_OF_INDEX};
 use cosmwasm_std::{to_json_binary, Addr, Binary, Deps, Env};
 use neutron_sdk::{
-    bindings::query::QueryRegisteredQueryResponse,
-    interchain_queries::v045::queries::ValidatorResponse,
-};
-use neutron_sdk::{
-    bindings::query::{NeutronQuery, QueryInterchainAccountAddressResponse},
+    bindings::query::{
+        NeutronQuery, QueryInterchainAccountAddressResponse, QueryRegisteredQueryResponse,
+    },
     interchain_queries::{
         check_query_type, get_registered_query, query_kv_result,
         types::QueryType,
         v045::{
-            queries::BalanceResponse, types::Balances, types::Delegations, types::StakingValidator,
+            queries::ValidatorResponse, types::Balances as v045Balances,
+            types::Delegations as v045Delegations, types::StakingValidator,
         },
-        v047::types::Delegations as v047Delegations,
+        v047::{types::Balances as v047Balances, types::Delegations as v047Delegations},
     },
     NeutronResult,
 };
@@ -118,6 +117,7 @@ pub fn query_decimals(deps: Deps<NeutronQuery>, remote_denom: String) -> Neutron
 pub fn query_balance_by_addr(
     deps: Deps<NeutronQuery>,
     addr: String,
+    sdk_greater_or_equal_v047: bool,
 ) -> NeutronResult<BalanceResponse> {
     let contract_query_id =
         ADDRESS_TO_REPLY_ID.load(deps.storage, (addr, QueryKind::Balances.to_string()))?;
@@ -127,16 +127,31 @@ pub fn query_balance_by_addr(
 
     // check that query type is KV
     check_query_type(registered_query.registered_query.query_type, QueryType::KV)?;
-    // reconstruct a nice Balances structure from raw KV-storage values
-    let balances: Balances = query_kv_result(deps, registered_query_id)?;
 
-    Ok(BalanceResponse {
-        // last_submitted_height tells us when the query result was updated last time (block height)
-        last_submitted_local_height: registered_query
-            .registered_query
-            .last_submitted_result_local_height,
-        balances,
-    })
+    if sdk_greater_or_equal_v047 {
+        let balances: v047Balances = query_kv_result(deps, registered_query_id)?;
+
+        Ok(BalanceResponse {
+            // last_submitted_height tells us when the query result was updated last time (block height)
+            last_submitted_local_height: registered_query
+                .registered_query
+                .last_submitted_result_local_height,
+            balances: Balances {
+                coins: balances.coins,
+            },
+        })
+    } else {
+        let balances: v045Balances = query_kv_result(deps, registered_query_id)?;
+        Ok(BalanceResponse {
+            // last_submitted_height tells us when the query result was updated last time (block height)
+            last_submitted_local_height: registered_query
+                .registered_query
+                .last_submitted_result_local_height,
+            balances: Balances {
+                coins: balances.coins,
+            },
+        })
+    }
 }
 
 pub fn query_delegation_by_addr(
@@ -163,7 +178,7 @@ pub fn query_delegation_by_addr(
             delegations: delegations.delegations,
         })
     } else {
-        let delegations: Delegations = query_kv_result(deps, registered_query_id)?;
+        let delegations: v045Delegations = query_kv_result(deps, registered_query_id)?;
         Ok(DelegatorDelegationsResponse {
             // last_submitted_height tells us when the query result was updated last time (block height)
             last_submitted_local_height: registered_query

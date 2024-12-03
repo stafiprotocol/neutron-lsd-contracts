@@ -1,14 +1,12 @@
+use crate::state::{
+    BalanceResponse, DelegatorDelegationsResponse, EraSnapshot, IcaInfo, IcaInfos, PoolInfo,
+    QueryIds, QueryKind, Stack, UnstakeInfo,
+};
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{Addr, Coin, Uint128};
-
 use neutron_sdk::{
     bindings::query::{QueryInterchainAccountAddressResponse, QueryRegisteredQueryResponse},
-    interchain_queries::v045::queries::{BalanceResponse, ValidatorResponse},
-};
-
-use crate::state::{
-    DelegatorDelegationsResponse, EraSnapshot, IcaInfo, IcaInfos, PoolInfo, QueryIds, QueryKind,
-    Stack, UnstakeInfo,
+    interchain_queries::v045::queries::ValidatorResponse,
 };
 
 #[cw_serde]
@@ -28,7 +26,10 @@ pub enum QueryMsg {
         query_kind: QueryKind,
     },
     #[returns(BalanceResponse)]
-    Balance { ica_addr: String },
+    Balance {
+        ica_addr: String,
+        sdk_greater_or_equal_v047: bool,
+    },
     #[returns(DelegatorDelegationsResponse)]
     Delegations {
         pool_addr: String,

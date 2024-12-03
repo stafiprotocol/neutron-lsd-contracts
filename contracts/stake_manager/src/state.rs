@@ -1,12 +1,11 @@
 use crate::error_conversion::ContractError;
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{from_json, to_json_vec, Addr, Binary, StdResult, Storage, Uint128};
-use cw_storage_plus::{Item, Map};
-use neutron_sdk::NeutronResult;
-
 use crate::helper::{
     QUERY_REPLY_ID_RANGE_END, QUERY_REPLY_ID_RANGE_START, REPLY_ID_RANGE_END, REPLY_ID_RANGE_START,
 };
+use cosmwasm_schema::cw_serde;
+use cosmwasm_std::{from_json, to_json_vec, Addr, Binary, Coin, StdResult, Storage, Uint128};
+use cw_storage_plus::{Item, Map};
+use neutron_sdk::NeutronResult;
 
 #[cw_serde]
 pub struct Stack {
@@ -196,6 +195,17 @@ pub const UNSTAKES_OF_INDEX: Map<(String, u64), UnstakeInfo> = Map::new("unstake
 #[cw_serde]
 pub struct DelegatorDelegationsResponse {
     pub delegations: Vec<cosmwasm_std::Delegation>,
+    pub last_submitted_local_height: u64,
+}
+
+#[cw_serde]
+pub struct Balances {
+    pub coins: Vec<Coin>,
+}
+
+#[cw_serde]
+pub struct BalanceResponse {
+    pub balances: Balances,
     pub last_submitted_local_height: u64,
 }
 

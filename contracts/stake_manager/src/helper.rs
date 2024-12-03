@@ -1,5 +1,10 @@
-use std::ops::Add;
-
+use crate::query_callback::register_query_submsg;
+use crate::state::{
+    IcaInfo, PoolInfo, QueryKind, SudoPayload, TxType, DECIMALS, ERA_RATE, POOLS, TOTAL_STACK_FEE,
+};
+use crate::state::{ADDRESS_TO_REPLY_ID, INFO_OF_ICA_ID, REPLY_ID_TO_QUERY_ID};
+use crate::tx_callback::msg_with_sudo_callback;
+use crate::{error_conversion::ContractError, state::EraStatus};
 use cosmos_sdk_proto::cosmos::bank::v1beta1::MsgSend;
 use cosmos_sdk_proto::cosmos::base::v1beta1::Coin;
 use cosmos_sdk_proto::cosmos::distribution::v1beta1::MsgSetWithdrawAddress;
@@ -10,13 +15,10 @@ use cosmwasm_std::{instantiate2_address, to_json_binary, SubMsg, Uint64, WasmMsg
 use cosmwasm_std::{Binary, Deps, DepsMut, QueryRequest, StdResult, Uint128};
 use cosmwasm_std::{Env, MessageInfo, Response};
 use cw20::MinterResponse;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
-
 use neutron_sdk::bindings::msg::{IbcFee, NeutronMsg};
 use neutron_sdk::bindings::query::NeutronQuery;
 use neutron_sdk::bindings::types::ProtobufAny;
-use neutron_sdk::interchain_queries::v045::new_register_delegator_delegations_query_msg;
+use neutron_sdk::interchain_queries::v045::new_register_delegator_delegations_query_msg as v045_new_register_delegator_delegations_query_msg;
 use neutron_sdk::interchain_queries::v045::{
     new_register_balance_query_msg, new_register_staking_validators_query_msg,
 };
@@ -24,14 +26,9 @@ use neutron_sdk::interchain_queries::v047::register_queries::new_register_delega
 use neutron_sdk::query::min_ibc_fee::query_min_ibc_fee;
 use neutron_sdk::NeutronError;
 use neutron_sdk::NeutronResult;
-
-use crate::query_callback::register_query_submsg;
-use crate::state::{
-    IcaInfo, PoolInfo, QueryKind, SudoPayload, TxType, DECIMALS, ERA_RATE, POOLS, TOTAL_STACK_FEE,
-};
-use crate::state::{ADDRESS_TO_REPLY_ID, INFO_OF_ICA_ID, REPLY_ID_TO_QUERY_ID};
-use crate::tx_callback::msg_with_sudo_callback;
-use crate::{error_conversion::ContractError, state::EraStatus};
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+use std::ops::Add;
 
 pub const FEE_DENOM: &str = "untrn";
 pub const ICA_WITHDRAW_SUFIX: &str = "-withdraw_addr";
@@ -326,7 +323,7 @@ pub fn register_delegator_delegations_query_msg(
             update_period,
         )
     } else {
-        new_register_delegator_delegations_query_msg(
+        v045_new_register_delegator_delegations_query_msg(
             connection_id,
             delegator,
             validators,
