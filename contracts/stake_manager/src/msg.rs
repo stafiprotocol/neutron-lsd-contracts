@@ -201,6 +201,14 @@ pub enum ExecuteMsg {
     UpdateIcqUpdatePeriod {
         pool_addr: String,
     },
+    AdminUnbondAll {
+        pool_addr: String,
+    },
+    AdminTransferFunds {
+        pool_addr: String,
+        receiver: String,
+        amount: Uint128,
+    },
 }
 
 #[cw_serde]

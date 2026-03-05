@@ -24,6 +24,8 @@ pub mod execute_register_pool;
 pub mod execute_stake;
 pub mod execute_stake_lsm;
 pub mod execute_unstake;
+pub mod execute_admin_transfer_funds;
+pub mod execute_admin_unbond_all;
 pub mod execute_update_validators_icq;
 pub mod execute_withdraw;
 pub mod helper;

@@ -25,6 +25,10 @@ pub fn execute_unstake(
 
     let mut pool_info = POOLS.load(deps.storage, pool_addr.clone())?;
 
+    if pool_info.paused {
+        return Err(ContractError::PoolIsPaused {}.into());
+    }
+
     let mut unstakes_index_for_user = UNSTAKES_INDEX_FOR_USER
         .load(deps.storage, (info.sender.clone(), pool_addr.clone()))
         .unwrap_or_else(|_| vec![]);

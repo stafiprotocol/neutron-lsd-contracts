@@ -1,3 +1,9 @@
+use crate::execute_admin_transfer_funds::{
+    sudo_admin_transfer_callback, sudo_admin_transfer_failed_callback,
+};
+use crate::execute_admin_unbond_all::{
+    sudo_admin_unbond_all_callback, sudo_admin_unbond_all_failed_callback,
+};
 use crate::execute_era_restake::sudo_era_rebond_failed_callback;
 use crate::execute_pool_update_validator::{
     sudo_update_validator_callback, sudo_update_validator_failed_callback,
@@ -139,6 +145,8 @@ fn sudo_callback(
         TxType::RmValidator => sudo_rm_validator_callback(deps, payload),
         TxType::StakeLsm => sudo_stake_lsm_callback(deps, payload),
         TxType::RedeemTokenForShare => sudo_redeem_token_for_share_callback(deps, payload),
+        TxType::AdminUnbondAll => sudo_admin_unbond_all_callback(payload),
+        TxType::AdminTransfer => sudo_admin_transfer_callback(payload),
     }
 }
 
@@ -157,5 +165,7 @@ fn sudo_failed_callback(
         TxType::RmValidator => sudo_rm_validator_failed_callback(deps, payload),
         TxType::StakeLsm => sudo_stake_lsm_failed_callback(payload),
         TxType::RedeemTokenForShare => sudo_redeem_token_for_share_failed_callback(deps, payload),
+        TxType::AdminUnbondAll => sudo_admin_unbond_all_failed_callback(payload),
+        TxType::AdminTransfer => sudo_admin_transfer_failed_callback(payload),
     }
 }

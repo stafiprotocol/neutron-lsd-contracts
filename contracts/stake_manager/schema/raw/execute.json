@@ -520,6 +520,56 @@
         }
       },
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "admin_unbond_all"
+      ],
+      "properties": {
+        "admin_unbond_all": {
+          "type": "object",
+          "required": [
+            "pool_addr"
+          ],
+          "properties": {
+            "pool_addr": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "admin_transfer_funds"
+      ],
+      "properties": {
+        "admin_transfer_funds": {
+          "type": "object",
+          "required": [
+            "amount",
+            "pool_addr",
+            "receiver"
+          ],
+          "properties": {
+            "amount": {
+              "$ref": "#/definitions/Uint128"
+            },
+            "pool_addr": {
+              "type": "string"
+            },
+            "receiver": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     }
   ],
   "definitions": {

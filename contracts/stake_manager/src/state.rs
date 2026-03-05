@@ -320,6 +320,8 @@ pub enum TxType {
     EraRebond,
     RedeemTokenForShare,
     StakeLsm,
+    AdminUnbondAll,
+    AdminTransfer,
 }
 #[cw_serde]
 pub struct SudoPayload {

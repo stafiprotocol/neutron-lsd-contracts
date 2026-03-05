@@ -1,3 +1,5 @@
+use crate::execute_admin_transfer_funds::execute_admin_transfer_funds;
+use crate::execute_admin_unbond_all::execute_admin_unbond_all;
 use crate::execute_config_decimals::execute_config_decimals;
 use crate::execute_config_pool_stack_fee::execute_config_pool_stack_fee;
 use crate::execute_config_unbonding_seconds::execute_config_unbonding_seconds;
@@ -221,6 +223,14 @@ pub fn execute(
         ExecuteMsg::UpdateIcqUpdatePeriod { pool_addr } => {
             update_icq_update_period(deps, info, pool_addr)
         }
+        ExecuteMsg::AdminUnbondAll { pool_addr } => {
+            execute_admin_unbond_all(deps, env, info, pool_addr)
+        }
+        ExecuteMsg::AdminTransferFunds {
+            pool_addr,
+            receiver,
+            amount,
+        } => execute_admin_transfer_funds(deps, info, pool_addr, receiver, amount),
     }
 }
 
